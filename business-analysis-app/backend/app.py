@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, send_from_directory, abort
 from flask_cors import CORS
 import os
+import random
 
 app = Flask(
     __name__,
@@ -10,29 +11,48 @@ app = Flask(
 CORS(app)  # Enables fetch from frontend if needed
 
 # Dummy historical data for detailed metric views
+
+
+import random
+
+# Months
+months = ["January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"]
+
+# Historical data with seasonal trends
 historical_data = {
-    "revenue": [
-        {"month": "January", "value": 1150000},
-        {"month": "February", "value": 1180000},
-        {"month": "March", "value": 1200000},
-    ],
-    "profit": [
-        {"month": "January", "value": 330000},
-        {"month": "February", "value": 340000},
-        {"month": "March", "value": 350000},
-    ],
-    "customers": [
-        {"month": "January", "value": 14800},
-        {"month": "February", "value": 14950},
-        {"month": "March", "value": 15000},
-    ],
-    "conversion_rate": [
-        {"month": "January", "value": 2.3},
-        {"month": "February", "value": 2.4},
-        {"month": "March", "value": 2.5},
-    ]
+    "revenue": [],
+    "profit": [],
+    "customers": [],
+    "conversion_rate": []
 }
 
+for i, month in enumerate(months):
+    # Revenue pattern: lower in summer (June–August), peak in holidays (Nov–Dec)
+    if month in ["June", "July", "August"]:
+        revenue = random.randint(1100000, 1200000)
+    elif month in ["November", "December"]:
+        revenue = random.randint(1400000, 1500000)
+    else:
+        revenue = random.randint(1200000, 1350000)
+    
+    # Profit roughly 25–30% of revenue, slight variation
+    profit = int(revenue * random.uniform(0.25, 0.3))
+    
+    # Customers grow gradually, slight monthly variation
+    base_customers = 14000 + i * 300  # start at 14k, +300 each month
+    customers = base_customers + random.randint(-200, 200)
+    
+    # Conversion rate 2–3%, slight seasonal variation
+    conversion = round(random.uniform(2.0 + i*0.05, 2.5 + i*0.05), 2)
+    
+    historical_data["revenue"].append({"month": month, "value": revenue})
+    historical_data["profit"].append({"month": month, "value": profit})
+    historical_data["customers"].append({"month": month, "value": customers})
+    historical_data["conversion_rate"].append({"month": month, "value": conversion})
+
+# Example output
+print(historical_data)
 # Dummy data for individual report details
 report_details_data = {
     1: {

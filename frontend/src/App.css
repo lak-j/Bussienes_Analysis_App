@@ -1,0 +1,96 @@
+/* frontend/src/App.css */
+.App {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  padding: 20px;
+  background-color: #f0f2f5; /* Light gray background */
+  min-height: 100vh;
+  color: #333;
+}
+
+.App-header {
+  background-color: #2c3e50; /* Dark blue-gray */
+  padding: 25px;
+  color: white;
+  margin-bottom: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.5em;
+}
+
+h2 {
+  color: #2c3e50;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+}
+
+.metrics-section, .reports-section {
+  background-color: white;
+  margin: 20px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  max-width: 1000px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.metric-card {
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fdfdfd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+.metric-card h3 {
+  color: #3498db; /* Blue */
+  margin-top: 0;
+  font-size: 1.4em;
+}
+
+.metric-card p {
+  font-size: 1.1em;
+  margin: 5px 0;
+}
+
+.metric-card strong {
+  color: #27ae60; /* Green for values */
+  font-size: 1.3em;
+}
+
+.reports-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.reports-section li {
+  background-color: #ecf0f1; /* Light gray */
+  border: 1px solid #dcdcdc;
+  margin-bottom: 12px;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1em;
+}
+
+.reports-section li strong {
+  color: #2c3e50;
+}

@@ -1,70 +1,98 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import DetailedMetrics from './DetailedMetrics';
 
 function App() {
-  const [businessData, setBusinessData] = useState(null);
+  const [data, setData] = useState({ metrics: [], reports: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true; // Flag to track if the component is mounted
-
+    let isMounted = true;
+    // Fetch data from the backend API
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/data'); // Cloud Shell: relative path
+        const response = await fetch('/api/data');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
+        const jsonData = await response.json();
         if (isMounted) {
-          setBusinessData(data);
+          setData(jsonData);
         }
       } catch (err) {
         if (isMounted) {
           setError(err);
         }
-        console.error(err);
+        console.error('There has been a problem with your fetch operation:', err);
       } finally {
         if (isMounted) {
           setLoading(false);
         }
       }
     };
-
     fetchData();
 
-    // Cleanup function to set isMounted to false when the component unmounts
     return () => {
       isMounted = false;
     };
-  }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
+  }, []); // The empty dependency array ensures this effect runs only once on mount
 
-  if (loading) return <div className="App">Loading...</div>;
-  if (error) return <div className="App">Error: {error.message}</div>;
-  // Defensive rendering: ensure businessData and its properties exist before accessing
-  if (!businessData || !businessData.metrics || !businessData.reports) {
-    return <div className="App">No data available.</div>;
+  if (loading) {
+    return <div className="App">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="App">Error: {error.message}</div>;
   }
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Business Dashboard</h1>
+        <h1>Business Analysis Dashboard</h1>
       </header>
       <main>
-        <section>
-          <h2>Metrics</h2>
-          {businessData.metrics.map((metric, idx) => (
-            <div key={idx}> {/* Using index as key is acceptable for static lists */}
-              <strong>{metric.name}: {metric.value}{metric.unit}</strong> ({metric.trend})
-            </div>
-          ))}
+        <section className="metrics">
+          <h2>Key Metrics/h2>
+          <div className="metrics-container">
+            {data.metrics.map((metric, index) => (
+              <div key={index} className="metric-card">
+                <h3>{metric.name}</h3>
+                <p className="metric-value">
+                  {metric.unit === '$' && metric.unit}
+                  {metric.value.toLocaleString()}
+                  {metric.unit !== '$' && metric.unit}
+                </p>
+                <p className={`trend trend-${metric.trend}`}>
+                  Trend: {metric.trend}
+                </p>
+              </div>
+            ))}
+          </div>
         </section>
-        <section>
-          <h2>Reports</h2>
-          {businessData.reports.map(report => (
-            <div key={report.id}>{report.title} - {report.date}</div>
-          ))}
+        <section className="reports">
+          <h2>Recent Reports</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.reports.map(report => (
+                <tr key={report.id}>
+                  <td>{report.id}</td>
+                  <td>{report.title}</td>
+                  <td>{report.date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+        <section className="detailed-metrics">
+          <DetailedMetrics />
         </section>
       </main>
     </div>

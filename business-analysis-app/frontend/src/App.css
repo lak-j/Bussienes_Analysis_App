@@ -80,3 +80,45 @@ main {
 .reports tbody tr:hover {
   background-color: #f9f9f9;
 }
+
+.detailed-metrics {
+  margin-top: 3rem;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.metric-buttons {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.metric-buttons button {
+  padding: 10px 20px;
+  border: 1px solid #3498db;
+  background-color: #fff;
+  color: #3498db;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.metric-buttons button:hover:not(:disabled) {
+  background-color: #2980b9;
+  color: white;
+  border-color: #2980b9;
+}
+
+.metric-buttons button:disabled {
+  background-color: #3498db;
+  color: white;
+  cursor: not-allowed;
+  border-color: #3498db;
+}

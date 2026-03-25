@@ -1,153 +1,167 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
+import DetailedMetrics from './DetailedMetrics';
 
 function App() {
-  const [summaryData, setSummaryData] = useState(null);
-  const [selectedMetric, setSelectedMetric] = useState(null);
-  const [historicalData, setHistoricalData] = useState(null);
-  const [reports, setReports] = useState([]);
-  const [selectedReport, setSelectedReport] = useState(null);
-  const [reportDetails, setReportDetails] = useState(null);
+  const [data, setData] = useState({ metrics: [], reports: [] });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch the main metrics and reports list when the app loads
   useEffect(() => {
-    fetch('/api/data')
-      .then((res) => res.json())
-      .then((data) => {
-        setSummaryData(data);
-        setReports(data.reports);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch data:", err);
-        setLoading(false);
-      });
-  }, []);
-
-  // Fetch historical data for a specific metric when clicked
-  const fetchHistoricalData = (metricName) => {
-    // Clear the report view when a metric is selected
-    setSelectedReport(null);
-    setReportDetails(null);
-
-    // The backend expects lowercased names with underscores (e.g., "conversion_rate")
-    const formattedName = metricName.toLowerCase().replace(' ', '_');
+    let isMounted = true;
     
-    fetch(`/api/data/${formattedName}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setSelectedMetric(metricName);
-        setHistoricalData(data);
-      })
-      .catch((err) => console.error("Failed to fetch historical data:", err));
+    const fetchData = async () => {
+      try {
+        const [dataResponse, analysisResponse] = await Promise.all([
+          fetch('/api/data'),
+          fetch('/api/analysis')
+        ]);
+
+        if (!dataResponse.ok || !analysisResponse.ok) {
+          throw new Error(`HTTP error!`);
+        }
+
+        const jsonData = await dataResponse.json();
+        const jsonAnalysisData = await analysisResponse.json();
+
+        if (isMounted) {
+          setData(jsonData);
+          setAnalysisData(jsonAnalysisData);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err);
+        }
+        console.error('There has been a problem with your fetch operation:', err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []); // The empty dependency array ensures this effect runs only once on mount
+
+  if (loading) {
+    return <div className="App">Load...</div>;
+  }
+
+  if (error) {
+    return <div className="App">Error: {error.message}</div>;
+  }
+
+  const handleReportAdded = (newReport) => {
+    setData(prevData => ({
+      ...prevData,
+      reports: [...prevData.reports, newReport]
+    }));
   };
 
-  // Fetch details for a specific report when clicked
-  const fetchReportDetails = (reportId) => {
-    // Clear the metric view when a report is selected
-    setSelectedMetric(null);
-    setHistoricalData(null);
+  const handleDeleteReport = async (reportId) => {
+    // User confirmation is a good practice for destructive actions
+    if (!window.confirm("Are you sure you want to delete this report?")) {
+      return;
+    }
 
-    fetch(`/api/reports/${reportId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setSelectedReport(reportId);
-        setReportDetails(data);
-      })
-      .catch((err) => console.error("Failed to fetch report details:", err));
+    try {
+      const response = await fetch(`/api/reports/${reportId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete report.');
+      }
+
+      // Update the UI in real-time by filtering out the deleted report
+      setData(prevData => ({
+        ...prevData,
+        reports: prevData.reports.filter(report => report.id !== reportId)
+      }));
+    } catch (error) {
+      console.error("Error deleting report:", error);
+      alert(error.message); // Inform the user of the error
+    }
   };
-
-  if (loading) return <div style={{ padding: "20px" }}>Loading Business Data...</div>;
-  if (!summaryData) return <div style={{ padding: "20px" }}>Error loading data. Make sure Flask is running!</div>;
 
   return (
-    <div style={{ padding: "20px", fontFamily: "sans-serif", color: "#333" }}>
-      <h1>Business Analysis App</h1>
-      
-      <h2> Click to view history</h2>
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-        {summaryData.metrics.map((metric, index) => (
-          <div 
-            key={index} 
-            onClick={() => fetchHistoricalData(metric.name)}
-            style={{ 
-              border: "1px solid #ccc", 
-              padding: "20px", 
-              borderRadius: "8px", 
-              cursor: "pointer",
-              minWidth: "150px",
-              backgroundColor: selectedMetric === metric.name ? "#e3f2fd" : "#f9f9f9",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-            }}
-          >
-            <h3 style={{ margin: "0 0 10px 0" }}>{metric.name}</h3>
-            <p style={{ fontSize: "24px", margin: "0", fontWeight: "bold" }}>
-              {metric.unit === '$' ? '$' : ''}{metric.value.toLocaleString()}{metric.unit === '%' ? '%' : ''}
-            </p>
-            <small style={{ color: metric.trend === 'up' ? 'green' : 'gray' }}>
-              Trend: {metric.trend.toUpperCase()}
-            </small>
+    <div className="App">
+      <header className="App-header">
+        <h1>Business Analysis Dashboard</h1>
+      </header>
+      <main>
+        <section className="metrics">
+          <h2>Key Metrics</h2>
+          <div className="metrics-container">
+            {data.metrics.map((metric, index) => (
+              <div key={index} className="metric-card">
+                <h3>{metric.name}</h3>
+                <p className="metric-value">
+                  {metric.unit === '$' && metric.unit}
+                  {metric.value.toLocaleString()}
+                  {metric.unit !== '$' && metric.unit}
+                </p>
+                <p className={`trend trend-${metric.trend}`}>
+                  Trend: {metric.trend}
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      <div style={{ marginTop: "40px" }}>
-        <h2>Click to view detais</h2>
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {reports.map((report) => (
-            <li
-              key={report.id}
-              onClick={() => fetchReportDetails(report.id)}
-              style={{
-                padding: "10px",
-                margin: "5px 0",
-                cursor: "pointer",
-                border: "1px solid #eee",
-                borderRadius: "4px",
-                backgroundColor: selectedReport === report.id ? "#e3f2fd" : "transparent"
-              }}
-            >
-              {report.title} - <small>{report.date}</small>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {selectedMetric && historicalData && (
-        <div style={{ marginTop: "40px" }}>
-          <h2>{selectedMetric} - Historical Data</h2>
-          <table style={{ width: "100%", borderCollapse: "collapse", maxWidth: "500px", textAlign: "left" }}>
+        </section>
+        <section className="reports">
+          <h2>Recent Reports</h2>
+          <table>
             <thead>
-              <tr style={{ borderBottom: "2px solid #333" }}>
-                <th style={{ padding: "10px 0" }}>Month</th>
-                <th style={{ padding: "10px 0" }}>Value</th>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {historicalData.map((dataPoint, idx) => (
-                <tr key={idx} style={{ borderBottom: "1px solid #ddd" }}>
-                  <td style={{ padding: "10px 0" }}>{dataPoint.month}</td>
-                  <td style={{ padding: "10px 0" }}>{dataPoint.value.toLocaleString()}</td>
+                {/* Sort reports by ID descending to show newest first */}
+                {[...data.reports].sort((a, b) => b.id - a.id).map(report => (
+                <tr key={report.id}>
+                  <td>{report.id}</td>
+                  <td>{report.title}</td>
+                  <td>{report.date}</td>
+                    <td>
+                      <button className="delete-btn" onClick={() => handleDeleteReport(report.id)}>Delete</button>
+                    </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+        </section>
+        <section className="detailed-metrics">
+          <DetailedMetrics />
+        </section>
 
-      {selectedReport && reportDetails && (
-        <div style={{ marginTop: "40px", borderTop: "2px solid #ccc", paddingTop: "20px" }}>
-          <h2>{reportDetails.title}</h2>
-          <p><strong>Date:</strong> {reportDetails.date} | <strong>Author:</strong> {reportDetails.author}</p>
-          <p><em>{reportDetails.summary}</em></p>
-          <h3>Highlights:</h3>
-          <ul style={{ paddingLeft: "20px" }}>
-            {reportDetails.highlights.map((highlight, index) => (
-              <li key={index} style={{ marginBottom: "5px" }}>{highlight}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+        <section className="analysis-section">
+          <h2>Churn Analysis</h2>
+          <ChurnAnalysis data={analysisData?.churn_analysis} isLoading={loadingState.analysis} error={errorState.analysis} />
+        </section>
+
+        <section className="analysis-section">
+          <h2>Customer Segmentation</h2>
+          <CustomerSegmentation data={analysisData?.customer_segmentation} isLoading={loadingState.analysis} error={errorState.analysis} />
+        </section>
+
+        <section className="analysis-section">
+          <h2>Conversion Funnel Analysis</h2>
+          <ConversionAnalysis data={analysisData?.conversion_analysis} isLoading={loadingState.analysis} error={errorState.analysis} />
+        </section>
+
+        <EditReportModal
+          report={editingReport}
+          onSave={handleUpdateReport}
+          onCancel={() => setEditingReport(null)} />
+      </main>
     </div>
   );
 }

@@ -7,7 +7,7 @@ export default function ForecastApp() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Sales Forecasting App</h1>
+      <h1 className="text-2xl font-bold mb-4">Sales Forecasting </h1>
       <UploadForm setForecastData={setForecastData} />
       
       {forecastData.length > 0 && (

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ForecastChart from "./ForecastChart";
 
 export default function UploadForm({ setForecastData }) {
   const [file, setFile] = useState(null);
@@ -29,18 +28,24 @@ export default function UploadForm({ setForecastData }) {
     setError("");
 
     try {
-      // Make sure this matches your local backend URL
-      const response = await fetch("http://127.0.0.1:5000/forecast", {
-        method: "POST",
-        body: formData,
-      });
-
+      // Make sure this points to your backend
+   const response = await fetch("/api/forecast", {
+  method: "POST",
+  body: formData,
+});
       if (!response.ok) {
-        throw new Error("Failed to fetch forecast. Check your backend server.");
+        throw new Error("Failed to fetch forecast. Check backend server.");
       }
 
       const data = await response.json();
-      setForecastData(data);
+     const formattedData = Object.keys(data).flatMap(product =>
+  data[product].map(item => ({
+    ...item,
+    Product: product
+  }))
+);
+
+setForecastData(formattedData);
     } catch (err) {
       console.error(err);
       setError(err.message);

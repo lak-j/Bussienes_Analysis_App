@@ -1,116 +1,122 @@
-# forecast.py
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import pandas as pd
-from statsmodels.tsa.holtwinters import ExponentialSmoothing
-from sklearn.linear_model import LinearRegression
-import numpy as np
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all origins
+CORS(app)  # Allow all origins (React frontend can connect)
 
-import pandas as pd
+# ------------------ Forecast Models ------------------ #
+def moving_average_forecast(series, months=6):
+    avg = series.tail(3).mean()
+    return [float(avg)] * months
 
-def generate_forecast(data, month_col, sales_col, product_col, months):
-    """
-    Generate forecasts for each product in the dataset.
-    
-    Args:
-        data (pd.DataFrame): Input data with at least month_col, sales_col, and product_col
-        month_col (str): Column name for dates
-        sales_col (str): Column name for sales values
-        product_col (str): Column name for products
-        months (int): Number of months to forecast
-    
-    Returns:
-        dict: Forecast results per product
-    """
-    from statsmodels.tsa.holtwinters import ExponentialSmoothing
-    from sklearn.linear_model import LinearRegression
-    import numpy as np
+def linear_forecast(series, months=6):
+    x = np.arange(len(series))
+    y = series.values
+    coef = np.polyfit(x, y, 1)
+    future_x = np.arange(len(series), len(series) + months)
+    return list(np.polyval(coef, future_x))
 
-    results = {}
+def exp_smoothing_forecast(series, months=6):
+    alpha = 0.5
+    result = [series.iloc[0]]
+    for val in series:
+        result.append(alpha * val + (1 - alpha) * result[-1])
+    last = result[-1]
+    return [float(last)] * months
 
-    # Ensure the month column is datetime
-    data[month_col] = pd.to_datetime(data[month_col])
+# ------------------ Core Forecast ------------------ #
+def run_forecast(file, month_col, sales_col, product_col, months):
+    df = pd.read_excel(file)
+    df[month_col] = pd.to_datetime(df[month_col])
 
-    # Process each product separately
-    products = data[product_col].unique()
-    for product in products:
-        product_data = data[data[product_col] == product].sort_values(by=month_col)
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    os.makedirs("charts", exist_ok=True)
+    os.makedirs("outputs", exist_ok=True)
 
-        y = product_data.set_index(month_col)[sales_col]
+    all_results = {}
 
-        # --- Exponential Smoothing ---
-        es_model = ExponentialSmoothing(y, seasonal=None)
-        es_fit = es_model.fit()
-        es_forecast = es_fit.forecast(months)
+    for product in df[product_col].unique():
+        data = df[df[product_col] == product].sort_values(month_col)
+        series = data[sales_col].reset_index(drop=True)
 
-        # --- Linear Regression ---
-        X = np.arange(len(y)).reshape(-1, 1)
-        lr = LinearRegression()
-        lr.fit(X, y.values)
-        lr_forecast = lr.predict(np.arange(len(y), len(y) + months).reshape(-1, 1))
+        forecasts = {
+            "MovingAvg": moving_average_forecast(series, months),
+            "Linear": linear_forecast(series, months),
+            "ExpSmoothing": exp_smoothing_forecast(series, months)
+        }
 
-        # --- Moving Average ---
-        ma_forecast = [y.iloc[-3:].mean()] * months  # simple moving average of last 3 months
-
-        # Generate forecast dates
-        forecast_dates = pd.date_range(
-            start=y.index[-1] + pd.offsets.MonthBegin(),
+        future_dates = pd.date_range(
+            start=datetime.now(),
             periods=months,
-            freq='MS'
+            freq="MS"
         )
 
-        # Combine results safely using .iloc
-        product_forecast = []
-        for i, f_date in enumerate(forecast_dates):
-            es_val = float(es_forecast.iloc[i])
-            lr_val = float(lr_forecast[i])
-            ma_val = float(ma_forecast[i])
-
-            best_model_name = max(
-                {"ExpSmoothing": es_val, "Linear": lr_val, "MovingAvg": ma_val},
-                key=lambda k: {"ExpSmoothing": es_val, "Linear": lr_val, "MovingAvg": ma_val}[k]
-            )
-
-            product_forecast.append({
-                "date": f_date.strftime("%Y-%m-%d"),
-                "ExpSmoothing": es_val,
-                "Linear": lr_val,
-                "MovingAvg": ma_val,
-                "BestModel": best_model_name,
-                "BestValue": {"ExpSmoothing": es_val, "Linear": lr_val, "MovingAvg": ma_val}[best_model_name]
+        results = []
+        for i in range(months):
+            values = {k: float(v[i]) for k, v in forecasts.items()}
+            best_model = max(values, key=values.get)
+            results.append({
+                "date": str(future_dates[i].date()),
+                "BestModel": best_model,
+                "BestValue": values[best_model],
+                **values,
+                "ForecastRun": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             })
 
-        results[product] = product_forecast
+        all_results[product] = results
 
-    return results
+        # -------- Chart -------- #
+        plt.figure()
+        plt.plot(series.values, label="Actual")
+        plt.plot(range(len(series), len(series) + months),
+                 [r["BestValue"] for r in results],
+                 label="Forecast")
+        plt.legend()
+        plt.title(f"Forecast for {product}")
+        plt.savefig(f"charts/Forecast_{product}_{timestamp}.png")
+        plt.close()
 
+    # -------- Save Excel -------- #
+    excel_path = f"outputs/ForecastOutput_{timestamp}.xlsx"
+    with pd.ExcelWriter(excel_path, engine="xlsxwriter") as writer:
+        for product, rows in all_results.items():
+            pd.DataFrame(rows).to_excel(writer, sheet_name=product, index=False)
+
+    return all_results
+
+# ------------------ API ------------------ #
 @app.route("/forecast", methods=["POST"])
 def forecast_api():
-    if "file" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-
-    file = request.files["file"]
-    month_col = request.form.get("month_col")
-    sales_col = request.form.get("sales_col")
-    product_col = request.form.get("product_col")
-    months = int(request.form.get("months", 6))
-
     try:
-        data = pd.read_excel(file)
+        if "file" not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+
+        file = request.files["file"]
+        month_col = request.form.get("month_col")
+        sales_col = request.form.get("sales_col")
+        product_col = request.form.get("product_col")
+        months = int(request.form.get("months", 6))
+
+        filepath = f"temp_{datetime.now().timestamp()}.xlsx"
+        file.save(filepath)
+
+        results = run_forecast(filepath, month_col, sales_col, product_col, months)
+
+        os.remove(filepath)  # clean temp file
+        return jsonify(results)
+
     except Exception as e:
-        return jsonify({"error": f"Failed to read Excel file: {str(e)}"}), 400
+        return jsonify({"error": str(e)}), 500
 
-    # Check required columns
-    for col in [month_col, sales_col]:
-        if col not in data.columns:
-            return jsonify({"error": f"Column '{col}' not found in file"}), 400
-
-    forecast_results = generate_forecast(data, month_col, sales_col, product_col, months)
-    return jsonify(forecast_results)
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "✅ Forecast API is running!"})
 
 if __name__ == "__main__":
-    print("🚀 Starting API server on http://0.0.0.0:5000")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Run API on port 8080 for Cloud Shell
+  app.run(host="0.0.0.0", port=8080, debug=True)

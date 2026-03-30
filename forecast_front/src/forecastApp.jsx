@@ -9,6 +9,24 @@ export default function ForecastApp() {
   
   const [forecastData, setForecastData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState("All");
+    const [showSummary, setShowSummary] = useState(false);
+  const totalProducts = Array.from(new Set(forecastData.map(d => d.Product))).length;
+
+const totalMonths = forecastData.length > 0
+  ? forecastData.filter(d => d.Product === forecastData[0].Product).length
+  : 0;
+
+const allValues = forecastData.flatMap(d => [
+  d.MovingAvg, d.Linear, d.ExpSmoothing
+]);
+
+const averageForecast = allValues.length > 0
+  ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(2)
+  : 0;
+
+const maxForecast = allValues.length > 0
+  ? Math.max(...allValues).toFixed(2)
+  : 0;
 const exportPDF = async () => {
   const pdf = new jsPDF("p", "mm", "a4");
 
@@ -40,7 +58,27 @@ const exportPDF = async () => {
       <h1 className="text-2xl font-bold mb-4">
         Sales Forecasting App
       </h1>
-
+  {/* Summary Cards - show only when button clicked */}
+      {showSummary && (
+        <div className="flex overflow-x-auto gap-4 mb-6">
+          <div className="flex-none w-60 bg-blue-500 text-white p-4 rounded shadow">
+            <h4 className="font-semibold">Total Products</h4>
+            <p className="text-2xl">{totalProducts}</p>
+          </div>
+          <div className="flex-none w-60 bg-green-500 text-white p-4 rounded shadow">
+            <h4 className="font-semibold">Months Forecasted</h4>
+            <p className="text-2xl">{totalMonths}</p>
+          </div>
+          <div className="flex-none w-60 bg-yellow-500 text-white p-4 rounded shadow">
+            <h4 className="font-semibold">Average Forecast</h4>
+            <p className="text-2xl">{averageForecast}</p>
+          </div>
+          <div className="flex-none w-60 bg-red-500 text-white p-4 rounded shadow">
+            <h4 className="font-semibold">Max Forecast</h4>
+            <p className="text-2xl">{maxForecast}</p>
+          </div>
+        </div>
+      )}
       <UploadForm setForecastData={setForecastData} />
 
       {/*  DOWNLOAD BUTTON  */}
@@ -77,6 +115,16 @@ const exportPDF = async () => {
     </select>
   </div>
 )}
+{/* Button to toggle summary cards */}
+      {forecastData.length > 0 && (
+        <button
+          onClick={() => setShowSummary(!showSummary)}
+          className="bg-indigo-500 text-white px-4 py-2 rounded mb-4"
+        >
+          {showSummary ? "Hide Card Summary" : "Show Card Summary"}
+        </button>
+      )}
+
       {/* Charts */}
       {forecastData.length > 0 &&
   (selectedProduct === "All" 
@@ -90,6 +138,9 @@ const exportPDF = async () => {
     />
   ))
 }
+ 
+    
     </div>
+    
   );
 }

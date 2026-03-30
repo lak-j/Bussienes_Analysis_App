@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
+from flask import send_file
 app = Flask(__name__)
 CORS(app)  # Allow all origins (React frontend can connect)
 
@@ -117,6 +117,12 @@ def forecast_api():
 def home():
     return jsonify({"message": "✅ Forecast API is running!"})
 
+
+@app.route("/download", methods=["GET"])
+def download_file():
+    files = os.listdir("outputs")
+    latest_file = sorted(files)[-1]
+    return send_file(f"outputs/{latest_file}", as_attachment=True)
 if __name__ == "__main__":
     # Run API on port 8080 for Cloud Shell
   app.run(host="0.0.0.0", port=8080, debug=True)

@@ -27,7 +27,15 @@ export default function ForecastChart({ product, data }) {
   };
 
   return (
-    <div style={{ marginTop: 40 }}>
+  <div
+  style={{
+    marginTop: 20,
+    padding: 20,
+    background: "#f8fafc",
+    borderRadius: 10,
+    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+  }}
+>
       <h3>{product} Forecast</h3>
 
       {/* ✅ WRAP CHART WITH REF */}

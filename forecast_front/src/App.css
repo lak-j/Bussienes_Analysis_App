@@ -219,3 +219,12 @@ tr:hover {
 th, td {
   text-align: center;
 }
+.top-product {
+  background: #2ecc71;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: bold;
+}

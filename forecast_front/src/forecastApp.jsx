@@ -5,12 +5,13 @@ import DashboardCards from "./components/DashboardCards";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./App.css";
+
 export default function ForecastApp() {
   
   const [forecastData, setForecastData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState("All");
     const [showSummary, setShowSummary] = useState(false);
-   
+   const [sortOrder, setSortOrder] = useState("asc");
   const totalProducts = Array.from(new Set(forecastData.map(d => d.Product))).length;
 
 const totalMonths = forecastData.length > 0
@@ -54,6 +55,13 @@ const exportPDF = async () => {
 
   pdf.save("Forecast_Report.pdf");
 };
+
+const topProduct =
+  forecastData.length > 0
+    ? forecastData.reduce((max, item) =>
+        item.BestValue > max.BestValue ? item : max
+      )
+    : null;
 
  return (
   <div className="app">
@@ -128,6 +136,13 @@ const exportPDF = async () => {
         </div>
       </div>
     )}
+  {/* top products */}
+{topProduct && (
+  <div className="top-product">
+    🏆 Top Product: <strong>{topProduct.Product}</strong>  
+    ({topProduct.BestValue})
+  </div>
+)}
 
     {/* CHARTS */}
     {forecastData.length > 0 &&
@@ -143,6 +158,9 @@ const exportPDF = async () => {
         </div>
       ))
     }
+    <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
+  Sort by Best Value ({sortOrder})
+</button>
 {forecastData.length > 0 && (
   <div className="table-container">
     <h3>Forecast Data Table</h3>
@@ -158,7 +176,11 @@ const exportPDF = async () => {
         </tr>
       </thead>
       <tbody>
-        {forecastData.map((row, index) => (
+        {forecastData.sort((a, b) =>
+    sortOrder === "asc"
+      ? a.BestValue - b.BestValue
+      : b.BestValue - a.BestValue
+  ).map((row, index) => (
           <tr key={index}>
             <td>{row.Product}</td>
             <td>{row.date}</td>

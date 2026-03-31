@@ -4,7 +4,7 @@ import ForecastChart from "./components/ForecastChart";
 import DashboardCards from "./components/DashboardCards";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-
+import "./App.css";
 export default function ForecastApp() {
   
   const [forecastData, setForecastData] = useState([]);
@@ -54,6 +54,7 @@ const exportPDF = async () => {
 
   pdf.save("Forecast_Report.pdf");
 };
+
  return (
   <div className="app">
 
@@ -142,7 +143,37 @@ const exportPDF = async () => {
         </div>
       ))
     }
-
+{forecastData.length > 0 && (
+  <div className="table-container">
+    <h3>Forecast Data Table</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Date</th>
+          <th>Moving Avg</th>
+          <th>Linear</th>
+          <th>Exp Smoothing</th>
+          <th>Best Model</th>
+        </tr>
+      </thead>
+      <tbody>
+        {forecastData.map((row, index) => (
+          <tr key={index}>
+            <td>{row.Product}</td>
+            <td>{row.date}</td>
+            <td>{row.MovingAvg}</td>
+            <td>{row.Linear}</td>
+            <td>{row.ExpSmoothing}</td>
+            <td style={{ fontWeight: "bold", color: "green" }}>
+  {row.BestModel}
+</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
   
  
     

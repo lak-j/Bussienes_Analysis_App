@@ -10,6 +10,7 @@ export default function ForecastApp() {
   const [forecastData, setForecastData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState("All");
     const [showSummary, setShowSummary] = useState(false);
+   
   const totalProducts = Array.from(new Set(forecastData.map(d => d.Product))).length;
 
 const totalMonths = forecastData.length > 0
@@ -53,91 +54,96 @@ const exportPDF = async () => {
 
   pdf.save("Forecast_Report.pdf");
 };
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        Sales Forecasting App
-      </h1>
-  {/* Summary Cards - show only when button clicked */}
-      {showSummary && (
-        <div className="flex overflow-x-auto gap-4 mb-6">
-          <div className="flex-none w-60 bg-blue-500 text-white p-4 rounded shadow">
-            <h4 className="font-semibold">Total Products</h4>
-            <p className="text-2xl">{totalProducts}</p>
-          </div>
-          <div className="flex-none w-60 bg-green-500 text-white p-4 rounded shadow">
-            <h4 className="font-semibold">Months Forecasted</h4>
-            <p className="text-2xl">{totalMonths}</p>
-          </div>
-          <div className="flex-none w-60 bg-yellow-500 text-white p-4 rounded shadow">
-            <h4 className="font-semibold">Average Forecast</h4>
-            <p className="text-2xl">{averageForecast}</p>
-          </div>
-          <div className="flex-none w-60 bg-red-500 text-white p-4 rounded shadow">
-            <h4 className="font-semibold">Max Forecast</h4>
-            <p className="text-2xl">{maxForecast}</p>
-          </div>
-        </div>
-      )}
-      <UploadForm setForecastData={setForecastData} />
+ return (
+  <div className="app">
 
-      {/*  DOWNLOAD BUTTON  */}
-      {forecastData.length > 0 && (
-        <button
-          onClick={() => {
-            window.open("http://localhost:8080/download", "_blank");
-          }}
-          className="bg-green-500 text-white px-4 py-2 rounded mb-4"
-        >
+    {/* HEADER */}
+    <div className="header">
+      <h1>📊 Business Forecasting </h1>
+    </div>
+
+    {/* UPLOAD */}
+    <UploadForm setForecastData={setForecastData} />
+
+    {/* ACTION BUTTONS */}
+    {forecastData.length > 0 && (
+      <div style={{ marginBottom: "15px" }}>
+        <button onClick={() => window.open("http://localhost:8080/download", "_blank")}>
           Download Excel
         </button>
-      )}
-{forecastData.length > 0 && (
-  <button
-    onClick={exportPDF}
-    className="bg-red-500 text-white px-4 py-2 rounded mb-4 ml-2"
-  >
-    Export PDF charts
-  </button>
-)}
-{forecastData.length > 0 && (
-  <div className="mb-4">
-    <label className="mr-2 font-semibold">Filter Product:</label>
-    <select
-      value={selectedProduct}
-      onChange={(e) => setSelectedProduct(e.target.value)}
-      className="border px-2 py-1 rounded"
-    >
-      <option value="All">All</option>
-      {Array.from(new Set(forecastData.map(d => d.Product))).map(p => (
-        <option key={p} value={p}>{p}</option>
-      ))}
-    </select>
-  </div>
-)}
-{/* Button to toggle summary cards */}
-      {forecastData.length > 0 && (
+
+        <button onClick={exportPDF} style={{ marginLeft: "10px" }}>
+          Export PDF
+        </button>
+
         <button
           onClick={() => setShowSummary(!showSummary)}
-          className="bg-indigo-500 text-white px-4 py-2 rounded mb-4"
+          style={{ marginLeft: "10px" }}
         >
-          {showSummary ? "Hide Card Summary" : "Show Card Summary"}
+          {showSummary ? "Hide Summary" : "Show Summary"}
         </button>
-      )}
+      </div>
+    )}
 
-      {/* Charts */}
-      {forecastData.length > 0 &&
-  (selectedProduct === "All" 
-    ? Array.from(new Set(forecastData.map(d => d.Product)))
-    : [selectedProduct]
-  ).map(product => (
-    <ForecastChart
-      key={product}
-      product={product}
-      data={forecastData.filter(d => d.Product === product)}
-    />
-  ))
-}
+    {/* FILTER */}
+    {forecastData.length > 0 && (
+      <div style={{ marginBottom: "15px" }}>
+        <label style={{ marginRight: "10px", fontWeight: "bold" }}>
+          Filter Product:
+        </label>
+        <select
+          value={selectedProduct}
+          onChange={(e) => setSelectedProduct(e.target.value)}
+        >
+          <option value="All">All</option>
+          {Array.from(new Set(forecastData.map(d => d.Product))).map(p => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+      </div>
+    )}
+
+    {/* SUMMARY CARDS */}
+    {showSummary && (
+      <div className="card-container">
+        <div className="card blue">
+          <h4>Total Products</h4>
+          <p>{totalProducts}</p>
+        </div>
+
+        <div className="card green">
+          <h4>Months Forecasted</h4>
+          <p>{totalMonths}</p>
+        </div>
+
+        <div className="card yellow">
+          <h4>Average Forecast</h4>
+          <p>{averageForecast}</p>
+        </div>
+
+        <div className="card red">
+          <h4>Max Forecast</h4>
+          <p>{maxForecast}</p>
+        </div>
+      </div>
+    )}
+
+    {/* CHARTS */}
+    {forecastData.length > 0 &&
+      (selectedProduct === "All"
+        ? Array.from(new Set(forecastData.map(d => d.Product)))
+        : [selectedProduct]
+      ).map(product => (
+        <div key={product} className="chart-container">
+          <ForecastChart
+            product={product}
+            data={forecastData.filter(d => d.Product === product)}
+          />
+        </div>
+      ))
+    }
+
+  
  
     
     </div>

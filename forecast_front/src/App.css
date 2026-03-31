@@ -228,3 +228,18 @@ th, td {
   text-align: center;
   font-weight: bold;
 }
+.pagination button {
+  padding: 6px 12px;
+  margin: 0 2px;
+  border: none;
+  background: #3498db;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.pagination button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}

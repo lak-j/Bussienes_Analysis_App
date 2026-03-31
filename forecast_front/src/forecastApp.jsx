@@ -12,6 +12,19 @@ export default function ForecastApp() {
   const [selectedProduct, setSelectedProduct] = useState("All");
     const [showSummary, setShowSummary] = useState(false);
    const [sortOrder, setSortOrder] = useState("asc");
+   const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 5; // adjust how many rows/charts per page
+// Filter data by selected product first
+const filteredData = selectedProduct === "All"
+  ? forecastData
+  : forecastData.filter(d => d.Product === selectedProduct);
+
+// Calculate pagination
+const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+const paginatedData = filteredData.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
   const totalProducts = Array.from(new Set(forecastData.map(d => d.Product))).length;
 
 const totalMonths = forecastData.length > 0
@@ -144,20 +157,36 @@ const topProduct =
   </div>
 )}
 
-    {/* CHARTS */}
-    {forecastData.length > 0 &&
-      (selectedProduct === "All"
-        ? Array.from(new Set(forecastData.map(d => d.Product)))
-        : [selectedProduct]
-      ).map(product => (
-        <div key={product} className="chart-container">
-          <ForecastChart
-            product={product}
-            data={forecastData.filter(d => d.Product === product)}
-          />
-        </div>
-      ))
-    }
+   {/* PAGINATED CHARTS */}
+{paginatedData.length > 0 &&
+  Array.from(new Set(paginatedData.map(d => d.Product))).map(product => (
+    <div key={product} className="chart-container">
+      <ForecastChart
+        product={product}
+        data={paginatedData.filter(d => d.Product === product)}
+      />
+    </div>
+  ))
+}
+<div className="pagination" style={{ marginTop: "20px", textAlign: "center" }}>
+  <button
+    disabled={currentPage === 1}
+    onClick={() => setCurrentPage(currentPage - 1)}
+    style={{ marginRight: "10px" }}
+  >
+    Previous
+  </button>
+
+  <span>Page {currentPage} of {totalPages}</span>
+
+  <button
+    disabled={currentPage === totalPages}
+    onClick={() => setCurrentPage(currentPage + 1)}
+    style={{ marginLeft: "10px" }}
+  >
+    Next
+  </button>
+</div>
     <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
   Sort by Best Value ({sortOrder})
 </button>

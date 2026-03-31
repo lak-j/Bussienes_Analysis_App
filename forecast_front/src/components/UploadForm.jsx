@@ -53,7 +53,29 @@ setForecastData(formattedData);
       setLoading(false);
     }
   };
+const downloadCSV = () => {
+  const headers = ["Product", "Date", "MovingAvg", "Linear", "ExpSmoothing", "BestModel"];
+  
+  const rows = forecastData.map(d => [
+    d.Product,
+    d.date,
+    d.MovingAvg,
+    d.Linear,
+    d.ExpSmoothing,
+    d.BestModel
+  ]);
 
+  let csvContent =
+    "data:text/csv;charset=utf-8," +
+    [headers, ...rows].map(e => e.join(",")).join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "forecast.csv");
+  document.body.appendChild(link);
+  link.click();
+};
   return (
     <div className="mb-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
@@ -65,6 +87,10 @@ setForecastData(formattedData);
         >
           {loading ? "Forecasting..." : "Upload & Forecast"}
         </button>
+        
+        <button onClick={downloadCSV}>
+  Download CSV
+</button>
       </form>
 
       {error && <p className="text-red-500 mt-2">{error}</p>}

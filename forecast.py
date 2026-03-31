@@ -6,6 +6,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask import send_file
+import io
 app = Flask(__name__)
 CORS(app)  # Allow all origins (React frontend can connect)
 
@@ -104,7 +105,7 @@ def forecast_api():
 
         filepath = f"temp_{datetime.now().timestamp()}.xlsx"
         file.save(filepath)
-
+        
         results = run_forecast(filepath, month_col, sales_col, product_col, months)
 
         os.remove(filepath)  # clean temp file
@@ -123,6 +124,10 @@ def download_file():
     files = os.listdir("outputs")
     latest_file = sorted(files)[-1]
     return send_file(f"outputs/{latest_file}", as_attachment=True)
+
+ 
+
+
 if __name__ == "__main__":
     # Run API on port 8080 for Cloud Shell
   app.run(host="0.0.0.0", port=8080, debug=True)

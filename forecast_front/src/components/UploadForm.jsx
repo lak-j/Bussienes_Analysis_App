@@ -88,7 +88,7 @@ const downloadCSV = () => {
           {loading ? "Forecasting..." : "Upload & Forecast"}
         </button>
         
-        <button onClick={downloadCSV}>
+    <button className="csv-download-btn" onClick={downloadCSV}>
   Download CSV
 </button>
       </form>

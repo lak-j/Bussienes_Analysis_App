@@ -243,3 +243,25 @@ th, td {
   background: #bdc3c7;
   cursor: not-allowed;
 }
+/* CSV Download Button Style */
+.csv-download-btn {
+  background-color: #101110; /* Green background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Vertical + horizontal padding */
+  border: none; /* Remove default border */
+  border-radius: 6px; /* Rounded corners */
+  font-size: 16px; /* Slightly bigger text */
+  cursor: pointer; /* Pointer on hover */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth hover */
+  margin: 5px 0; /* Space around button */
+}
+
+.csv-download-btn:hover {
+  background-color: #4a4d4a; /* Slightly darker green on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+}
+
+.csv-download-btn:active {
+  transform: translateY(1px); /* Press effect */
+  background-color: #3e8e41; /* Darker green when clicked */
+}

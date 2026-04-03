@@ -125,8 +125,33 @@ def download_file():
     latest_file = sorted(files)[-1]
     return send_file(f"outputs/{latest_file}", as_attachment=True)
 
+@app.route("/trend/<product>", methods=["GET"])
+def trend(product):
+    if not hasattr(app, "last_forecast_data"):
+        return jsonify({"error": "No data"}), 400
+
+    data = [d for d in app.last_forecast_data if d["Product"] == product]
+
+    if len(data) < 2:
+        return jsonify({"trend": "stable"})
+
+    first = data[0]["BestValue"]
+    last = data[-1]["BestValue"]
+
+    if last > first:
+        return jsonify({"trend": "up"})
+    elif last < first:
+        return jsonify({"trend": "down"})
+    else:
+        return jsonify({"trend": "stable"})
  
 
+@app.route("/forecast_data", methods=["GET"])
+def get_forecast_data():
+    if not hasattr(app, "last_forecast_data"):
+        return jsonify([])
+
+    return jsonify(app.last_forecast_data)
 
 if __name__ == "__main__":
     # Run API on port 8080 for Cloud Shell

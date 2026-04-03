@@ -265,3 +265,37 @@ th, td {
   transform: translateY(1px); /* Press effect */
   background-color: #3e8e41; /* Darker green when clicked */
 }
+.alert-box {
+  background: #e74c3c;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: bold;
+}
+/* LIVE INDICATOR */
+.live-indicator {
+  background: #2ecc71;
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+/* REFRESH BUTTON */
+.refresh-btn {
+  background: #3498db;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.refresh-btn:hover {
+  background: #2980b9;
+}

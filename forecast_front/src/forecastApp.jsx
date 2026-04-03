@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import UploadForm from "./components/UploadForm";
 import ForecastChart from "./components/ForecastChart";
 import DashboardCards from "./components/DashboardCards";
@@ -18,7 +18,8 @@ const itemsPerPage = 5; // adjust how many rows/charts per page
 const filteredData = selectedProduct === "All"
   ? forecastData
   : forecastData.filter(d => d.Product === selectedProduct);
-
+  //Alert for High Forecast
+const highValue = forecastData.find(d => d.BestValue > 6000);
 // Calculate pagination
 const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 const paginatedData = filteredData.slice(
@@ -75,6 +76,40 @@ const topProduct =
         item.BestValue > max.BestValue ? item : max
       )
     : null;
+const [compareProducts, setCompareProducts] = useState([]);
+
+
+const fetchLatestData = async () => {
+  try {
+    const res = await fetch("http://localhost:8080/forecast_data");
+    const data = await res.json();
+
+    console.log("REFRESH DATA:", data);
+
+    setForecastData(data); // always update for testing
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// useEffect(() => {
+//   const interval = setInterval(() => {
+//     fetch("http://localhost:8080/forecast_data")
+//       .then(res => res.json())
+//       .then(data => {
+//         console.log("LIVE DATA:", data);
+
+//         // ✅ DO NOT overwrite with empty/bad data
+//         if (Array.isArray(data) && data.length > 0) {
+//           setForecastData(data);
+//         }
+//       })
+//       .catch(err => console.error(err));
+//   }, 5000);
+
+//   return () => clearInterval(interval);
+// }, []); // ✅ MUST BE EMPTY
+
 
  return (
   <div className="app">
@@ -97,6 +132,16 @@ const topProduct =
         <button onClick={exportPDF} style={{ marginLeft: "10px" }}>
           Export PDF
         </button>
+
+<button
+  className="refresh-btn"
+  onClick={() => {
+    console.log("Button clicked"); // debug
+    fetchLatestData();
+  }}
+>
+  🔄 Refresh Now
+</button>
 
         <button
           onClick={() => setShowSummary(!showSummary)}
@@ -154,6 +199,17 @@ const topProduct =
   <div className="top-product">
     🏆 Top Product: <strong>{topProduct.Product}</strong>  
     ({topProduct.BestValue})
+  </div>
+)}
+{highValue && (
+  <div className="alert-box">
+    ⚠️ High Forecast Detected: {highValue.Product} ({highValue.BestValue})
+  </div>
+)}
+
+{forecastData.length > 0 && (
+  <div className="live-indicator">
+    🟢 Live Dashboard (Auto-updating every 5s)
   </div>
 )}
 

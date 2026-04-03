@@ -5,6 +5,7 @@ export default function UploadForm({ setForecastData }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setError("");
@@ -76,6 +77,9 @@ const downloadCSV = () => {
   document.body.appendChild(link);
   link.click();
 };
+
+
+
   return (
     <div className="mb-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">

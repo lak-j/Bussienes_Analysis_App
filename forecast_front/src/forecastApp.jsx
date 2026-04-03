@@ -13,6 +13,8 @@ export default function ForecastApp() {
     const [showSummary, setShowSummary] = useState(false);
    const [sortOrder, setSortOrder] = useState("asc");
    const [currentPage, setCurrentPage] = useState(1);
+
+
 const itemsPerPage = 5; // adjust how many rows/charts per page
 // Filter data by selected product first
 const filteredData = selectedProduct === "All"
@@ -109,7 +111,31 @@ const fetchLatestData = async () => {
 
 //   return () => clearInterval(interval);
 // }, []); // ✅ MUST BE EMPTY
+const downloadTableCSV = () => {
+  if (paginatedData.length === 0) return;
 
+  const headers = ["Product", "Date", "MovingAvg", "Linear", "ExpSmoothing", "BestModel"];
+  const rows = paginatedData.map(d => [
+    d.Product,
+    d.date,
+    d.MovingAvg,
+    d.Linear,
+    d.ExpSmoothing,
+    d.BestModel
+  ]);
+
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    [headers, ...rows].map(e => e.join(",")).join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "filtered_forecast.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
  return (
   <div className="app">
@@ -125,6 +151,7 @@ const fetchLatestData = async () => {
     {/* ACTION BUTTONS */}
     {forecastData.length > 0 && (
       <div style={{ marginBottom: "15px" }}>
+       
         <button onClick={() => window.open("http://localhost:8080/download", "_blank")}>
           Download Excel
         </button>
@@ -133,15 +160,7 @@ const fetchLatestData = async () => {
           Export PDF
         </button>
 
-<button
-  className="refresh-btn"
-  onClick={() => {
-    console.log("Button clicked"); // debug
-    fetchLatestData();
-  }}
->
-  🔄 Refresh Now
-</button>
+
 
         <button
           onClick={() => setShowSummary(!showSummary)}
@@ -151,7 +170,14 @@ const fetchLatestData = async () => {
         </button>
       </div>
     )}
-
+{forecastData.length > 0 && (
+  <button
+    onClick={downloadTableCSV}
+    style={{ marginLeft: "10px" }}
+  >
+    Download Table CSV
+  </button>
+)}
     {/* FILTER */}
     {forecastData.length > 0 && (
       <div style={{ marginBottom: "15px" }}>

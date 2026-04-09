@@ -13,7 +13,8 @@ export default function ForecastApp() {
     const [showSummary, setShowSummary] = useState(false);
    const [sortOrder, setSortOrder] = useState("asc");
    const [currentPage, setCurrentPage] = useState(1);
-
+const [startDate, setStartDate] = useState("");
+const [endDate, setEndDate] = useState("");
 
 const itemsPerPage = 5; // adjust how many rows/charts per page
 // Filter data by selected product first
@@ -137,6 +138,24 @@ const downloadTableCSV = () => {
   document.body.removeChild(link);
 };
 
+
+// Add trend arrows for each row
+const addTrends = (data) => {
+  return data.map((row, index, arr) => {
+    const previous = arr[index - 1];
+    let trend = "⏺"; // neutral
+    if (previous && previous.Product === row.Product) {
+      if (row.BestValue > previous.BestValue) trend = "🔺"; // up
+      else if (row.BestValue < previous.BestValue) trend = "🔻"; // down
+    }
+    return { ...row, trend };
+  });
+};
+
+// Apply trend to displayed paginated data
+const paginatedDataWithTrends = addTrends(paginatedData);
+
+
  return (
   <div className="app">
 
@@ -196,6 +215,28 @@ const downloadTableCSV = () => {
       </div>
     )}
 
+{/* DATE RANGE FILTER */}
+{forecastData.length > 0 && (
+  <div style={{ marginBottom: "15px" }}>
+    <label style={{ marginRight: "10px", fontWeight: "bold" }}>
+      From:
+    </label>
+    <input
+      type="date"
+      value={startDate}
+      onChange={(e) => setStartDate(e.target.value)}
+    />
+
+    <label style={{ margin: "0 10px", fontWeight: "bold" }}>
+      To:
+    </label>
+    <input
+      type="date"
+      value={endDate}
+      onChange={(e) => setEndDate(e.target.value)}
+    />
+  </div>
+)}
     {/* SUMMARY CARDS */}
     {showSummary && (
       <div className="card-container">
@@ -272,6 +313,7 @@ const downloadTableCSV = () => {
     <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
   Sort by Best Value ({sortOrder})
 </button>
+
 {forecastData.length > 0 && (
   <div className="table-container">
     <h3>Forecast Data Table</h3>
@@ -304,6 +346,27 @@ const downloadTableCSV = () => {
           </tr>
         ))}
       </tbody>
+
+      <tbody>
+  {paginatedDataWithTrends
+    .sort((a, b) =>
+      sortOrder === "asc" ? a.BestValue - b.BestValue : b.BestValue - a.BestValue
+    )
+    .map((row, index) => (
+      <tr key={index}>
+        <td>{row.Product}</td>
+        <td>{row.date}</td>
+        <td>{row.MovingAvg}</td>
+        <td>{row.Linear}</td>
+        <td>{row.ExpSmoothing}</td>
+        <td style={{ fontWeight: "bold", color: "green" }}>
+          {row.BestModel} {row.trend}
+        </td>
+        
+      </tr>
+  ))}
+</tbody>
+
     </table>
   </div>
 )}

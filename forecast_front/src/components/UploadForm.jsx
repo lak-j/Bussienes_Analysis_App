@@ -94,15 +94,7 @@ const downloadCSV = () => {
      
     
       </form>
-    <button
-  className="refresh-btn"
-  onClick={() => {
-    console.log("Button clicked"); // debug
-    fetchLatestData();
-  }}
->
-  🔄 Refresh Now
-</button>
+   
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   );

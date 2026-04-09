@@ -17,6 +17,9 @@ const [startDate, setStartDate] = useState("");
 const [endDate, setEndDate] = useState("");
 const [topProducts, setTopProducts] = useState([]);
 const [topN, setTopN] = useState(3);
+// Add this state at the top with other useState
+const [showTopProducts, setShowTopProducts] = useState(false);
+
 
 const fetchTopProducts = async (topN = 5) => {
   console.log("TOP BUTTON CLICKED");
@@ -215,12 +218,27 @@ const paginatedDataWithTrends = addTrends(paginatedData);
     <option value={10}>Top 10</option>
   </select>
 
-  <button onClick={() => fetchTopProducts(topN)}>
+  <button
+    onClick={() => {
+      fetchTopProducts(topN);
+      setShowTopProducts(true); // show after fetching
+    }}
+    style={{ marginLeft: "10px" }}
+  >
     Show Top Products
   </button>
+
+  {topProducts.length > 0 && showTopProducts && (
+    <button
+      onClick={() => setShowTopProducts(false)}
+      style={{ marginLeft: "10px" }}
+    >
+      Hide Top Products
+    </button>
+  )}
 </div>
 
-{topProducts.length > 0 && (
+{topProducts.length > 0 && showTopProducts && (
   <div className="top-products-container" style={{ marginTop: "10px" }}>
     <h3>🏆 Top Products</h3>
     <ul>

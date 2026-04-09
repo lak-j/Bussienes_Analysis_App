@@ -350,3 +350,10 @@ tr td.down {
 .reset-btn:hover {
   background: #c0392b;
 }
+.top-products-container {
+  margin-top: 20px;
+}
+
+.top-products-container .card {
+  min-width: 150px;
+}

@@ -11,6 +11,13 @@ import io
 app = Flask(__name__)
 CORS(app)  # Allow all origins (React frontend can connect)
 
+@app.after_request
+def after_request(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    return response
+
 # ------------------ Forecast Models ------------------ #
 def moving_average_forecast(series, months=6):
     avg = series.tail(3).mean()
@@ -95,29 +102,35 @@ def run_forecast(file, month_col, sales_col, product_col, months):
 @app.route("/forecast", methods=["POST"])
 def forecast_api():
     try:
-        if "file" not in request.files:
-            return jsonify({"error": "No file uploaded"}), 400
-
         file = request.files["file"]
-        month_col = request.form.get("month_col")
-        sales_col = request.form.get("sales_col")
-        product_col = request.form.get("product_col")
-        months = int(request.form.get("months", 6))
+        month_col = request.form["month_col"]
+        sales_col = request.form["sales_col"]
+        product_col = request.form["product_col"]
+        months = int(request.form["months"])
 
-        filepath = f"temp_{datetime.now().timestamp()}.xlsx"
+        filepath = "temp.xlsx"
         file.save(filepath)
-        
+
         results = run_forecast(filepath, month_col, sales_col, product_col, months)
 
-        os.remove(filepath)  # clean temp file
+        # ✅ STORE DATA (INSIDE try block)
+        app.last_forecast_data = []
+
+        for product, rows in results.items():
+            for r in rows:
+                r["Product"] = product
+                app.last_forecast_data.append(r)
+
         return jsonify(results)
 
     except Exception as e:
+        print("ERROR:", e)
         return jsonify({"error": str(e)}), 500
 
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({"message": "✅ Forecast API is running!"})
+
 
 
 @app.route("/download", methods=["GET"])
@@ -153,6 +166,60 @@ def get_forecast_data():
         return jsonify([])
 
     return jsonify(app.last_forecast_data)
+
+
+
+
+
+
+@app.route("/top-products", methods=["GET"])
+def top_products():
+    # ✅ Get parameter safely
+    n_param = request.args.get("n", 5)
+
+    try:
+        n = int(n_param)
+    except (ValueError, TypeError):
+        n = 5  # fallback default
+
+    # ✅ Check if forecast data exists
+    if not hasattr(app, "last_forecast_data") or not app.last_forecast_data:
+        return jsonify([])
+
+    data = app.last_forecast_data
+
+    # ✅ Group by product and find max BestValue
+    product_max = {}
+
+    for item in data:
+        product = item.get("Product")
+        value = item.get("BestValue", 0)
+
+        if product:
+            if product not in product_max or value > product_max[product]:
+                product_max[product] = value
+
+    # ✅ Sort products by highest value
+    sorted_products = sorted(
+        product_max.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    # ✅ Take top N
+    top_n = sorted_products[:n]
+
+    # ✅ Format response
+    result = [
+        {"Product": p, "BestValue": v}
+        for p, v in top_n
+    ]
+
+    return jsonify(result)
+
+
+
+
 
 if __name__ == "__main__":
     # Run API on port 8080 for Cloud Shell

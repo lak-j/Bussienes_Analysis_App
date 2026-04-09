@@ -15,6 +15,22 @@ export default function ForecastApp() {
    const [currentPage, setCurrentPage] = useState(1);
 const [startDate, setStartDate] = useState("");
 const [endDate, setEndDate] = useState("");
+const [topProducts, setTopProducts] = useState([]);
+const [topN, setTopN] = useState(3);
+
+const fetchTopProducts = async (topN = 5) => {
+  console.log("TOP BUTTON CLICKED");
+  try {
+    // Use /api instead of localhost
+    const res = await fetch(`/api/top-products?n=${topN}`);
+    const data = await res.json();
+    console.log("TOP PRODUCTS DATA:", data); // Debug to confirm API response
+    setTopProducts(data); // Store data for rendering
+  } catch (err) {
+    console.error("ERROR:", err);
+  }
+};
+
 
 const itemsPerPage = 5; // adjust how many rows/charts per page
 // Filter data by selected product first
@@ -189,6 +205,34 @@ const paginatedDataWithTrends = addTrends(paginatedData);
         </button>
       </div>
     )}
+
+
+<div style={{ marginBottom: "15px" }}>
+  <label style={{ marginRight: "10px" }}>Top N:</label>
+  <select value={topN} onChange={(e) => setTopN(Number(e.target.value))}>
+    <option value={3}>Top 3</option>
+    <option value={5}>Top 5</option>
+    <option value={10}>Top 10</option>
+  </select>
+
+  <button onClick={() => fetchTopProducts(topN)}>
+    Show Top Products
+  </button>
+</div>
+
+{topProducts.length > 0 && (
+  <div className="top-products-container" style={{ marginTop: "10px" }}>
+    <h3>🏆 Top Products</h3>
+    <ul>
+      {topProducts.map((item, index) => (
+        <li key={index}>
+          {item.Product}: {item.BestValue.toFixed(2)}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 {forecastData.length > 0 && (
   <button
     onClick={downloadTableCSV}

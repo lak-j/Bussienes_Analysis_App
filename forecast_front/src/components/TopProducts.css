@@ -1,0 +1,68 @@
+.top-products-page {
+  padding: 20px;
+  text-align: center;
+}
+
+.controls {
+  margin: 15px 0;
+}
+
+.controls select,
+.controls button {
+  margin-left: 10px;
+  padding: 5px 10px;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.product-card {
+  width: 200px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f4f6f8;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+}
+
+.top-card {
+  border: 2px solid gold;
+  background: #fffbea;
+}
+
+.product-name {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.value {
+  font-size: 18px;
+  color: #2e7d32;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #ddd;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4caf50;
+  border-radius: 5px;
+}
+
+.badge {
+  margin-top: 10px;
+  color: gold;
+  font-weight: bold;
+}

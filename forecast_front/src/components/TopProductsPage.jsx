@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./TopProducts.css"; // we will create this
 
 export default function TopProductsPage() {
   const [topProducts, setTopProducts] = useState([]);
@@ -6,7 +7,7 @@ export default function TopProductsPage() {
 
   const fetchTopProducts = async (n = topN) => {
     try {
-      const res = await fetch(`/api/top-products?n=${parseInt(n)}`); // ✅ ensure number
+      const res = await fetch(`/api/top-products?n=${parseInt(n)}`);
       const data = await res.json();
       setTopProducts(data);
     } catch (err) {
@@ -14,12 +15,11 @@ export default function TopProductsPage() {
     }
   };
 
-  // fetch when component mounts or topN changes
   useEffect(() => {
     fetchTopProducts();
   }, [topN]);
 
-  // Helper for ordinal numbers
+  // ordinal helper
   const getOrdinal = (i) => {
     const j = i % 10,
       k = i % 100;
@@ -29,37 +29,68 @@ export default function TopProductsPage() {
     return i + "th";
   };
 
+  // max value for progress bar
+  const maxValue =
+    topProducts.length > 0
+      ? Math.max(...topProducts.map((p) => p.BestValue))
+      : 1;
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>🏆 Top Products</h2>
+    <div className="top-products-page">
+      <h2>🏆 Top Performing Products</h2>
 
-      <label style={{ marginRight: "10px" }}>
-        Top N:
-        <select
-          value={topN}
-          onChange={(e) => setTopN(e.target.value)}
-          style={{ marginLeft: "5px" }}
-        >
-          <option value={3}>Top 3</option>
-          <option value={5}>Top 5</option>
-          <option value={10}>Top 10</option>
-        </select>
-      </label>
+      <div className="controls">
+        <label>
+          Top N:
+          <select
+            value={topN}
+            onChange={(e) => setTopN(e.target.value)}
+          >
+            <option value={3}>Top 3</option>
+            <option value={5}>Top 5</option>
+            <option value={10}>Top 10</option>
+          </select>
+        </label>
 
-      <button onClick={() => fetchTopProducts()} style={{ marginLeft: "10px" }}>
-        Refresh
-      </button>
+        <button onClick={() => fetchTopProducts()}>
+          🔄 Refresh
+        </button>
+      </div>
 
       {topProducts.length === 0 ? (
-        <p>No top products available</p>
+        <p>No data available</p>
       ) : (
-        <ul style={{ marginTop: "20px" }}>
+        <div className="cards-container">
           {topProducts.map((item, index) => (
-            <li key={index}>
-              {getOrdinal(index + 1)}: {item.Product} - {item.BestValue.toFixed(2)}
-            </li>
+            <div
+              key={index}
+              className={`product-card ${
+                index === 0 ? "top-card" : ""
+              }`}
+            >
+              <h3>{getOrdinal(index + 1)}</h3>
+              <p className="product-name">{item.Product}</p>
+
+              <p className="value">
+                {item.BestValue.toFixed(2)}
+              </p>
+
+              {/* Progress Bar */}
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${(item.BestValue / maxValue) * 100}%`,
+                  }}
+                ></div>
+              </div>
+
+              {index === 0 && (
+                <p className="badge">⭐ Best Performer</p>
+              )}
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

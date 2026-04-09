@@ -5,6 +5,7 @@ import DashboardCards from "./components/DashboardCards";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./App.css";
+import { useNavigate } from "react-router-dom";
 
 export default function ForecastApp() {
   
@@ -19,7 +20,7 @@ const [topProducts, setTopProducts] = useState([]);
 const [topN, setTopN] = useState(3);
 // Add this state at the top with other useState
 const [showTopProducts, setShowTopProducts] = useState(false);
-
+const navigate = useNavigate();
 
 const fetchTopProducts = async (topN = 5) => {
   console.log("TOP BUTTON CLICKED");
@@ -103,7 +104,7 @@ const [compareProducts, setCompareProducts] = useState([]);
 
 const fetchLatestData = async () => {
   try {
-    const res = await fetch("http://localhost:8080/forecast_data");
+    const res = await fetch("/api/forecast_data"); // use Vite proxy
     const data = await res.json();
 
     console.log("REFRESH DATA:", data);
@@ -113,7 +114,6 @@ const fetchLatestData = async () => {
     console.error(err);
   }
 };
-
 // useEffect(() => {
 //   const interval = setInterval(() => {
 //     fetch("http://localhost:8080/forecast_data")
@@ -219,23 +219,12 @@ const paginatedDataWithTrends = addTrends(paginatedData);
   </select>
 
   <button
-    onClick={() => {
-      fetchTopProducts(topN);
-      setShowTopProducts(true); // show after fetching
-    }}
-    style={{ marginLeft: "10px" }}
-  >
-    Show Top Products
-  </button>
-
-  {topProducts.length > 0 && showTopProducts && (
-    <button
-      onClick={() => setShowTopProducts(false)}
-      style={{ marginLeft: "10px" }}
-    >
-      Hide Top Products
-    </button>
-  )}
+  onClick={() => {
+    navigate("/top-products");  // Navigate to TopProductsPage
+  }}
+>
+  Show Top Products
+</button>
 </div>
 
 {topProducts.length > 0 && showTopProducts && (

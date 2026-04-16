@@ -214,7 +214,7 @@ const paginatedDataWithTrends = addTrends(paginatedData);
   
 
   <button onClick={() => navigate("/top-products")}>
-  Top Products Page
+  Top Products
 </button>
 </div>
 {

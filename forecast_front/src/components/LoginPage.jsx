@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./login.css";
 
 export default function LoginPage({ setIsAuthenticated }) {
   const [username, setUsername] = useState("");

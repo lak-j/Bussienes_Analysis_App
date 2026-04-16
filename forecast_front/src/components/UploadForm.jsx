@@ -78,29 +78,38 @@ const downloadCSV = () => {
   link.click();
 };
 
+const logout = () => {
+  localStorage.removeItem("token");
+  window.location.href = "/login";
+};
+
+const username = localStorage.getItem("username");
 
 
  return (
   <div className="mb-4 center-upload">
-    <form onSubmit={handleSubmit} className="upload-form">
-      
-      <input
-        type="file"
-        accept=".xlsx"
-        onChange={handleFileChange}
-      />
 
-      <button
-        type="submit"
-        className="upload-btn"
-        disabled={loading}
-      >
-        {loading ? "Forecasting..." : "Upload & Forecast"}
-      </button>
-
-    </form>
-
-    {error && <p className="error-text">{error}</p>}
+  {/* TOP RIGHT USER INFO */}
+  <div className="user-info">
+    <span>👤 Welcome, {username}</span>
+    <button className="logout-btn" onClick={logout}>
+      Logout
+    </button>
   </div>
+
+  <form onSubmit={handleSubmit} className="upload-form">
+    <input type="file" accept=".xlsx" onChange={handleFileChange} />
+
+    <button
+      type="submit"
+      className="upload-btn"
+      disabled={loading}
+    >
+      {loading ? "Forecasting..." : "Upload & Forecast"}
+    </button>
+  </form>
+
+  {error && <p className="error-text">{error}</p>}
+</div>
 );
 }

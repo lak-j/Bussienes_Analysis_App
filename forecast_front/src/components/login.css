@@ -1,122 +1,79 @@
-.login-page {
+/* FULL PAGE */
+.login-wrapper {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 
   background: linear-gradient(135deg, #4facfe, #00f2fe);
-  position: relative;
-  overflow: hidden;
-
   font-family: "Segoe UI", sans-serif;
 }
 
-/* BACKGROUND SHAPES */
-.login-page::before,
-.login-page::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.4;
-  filter: blur(40px);
-}
+/* LOGIN CARD */
+.login-box {
+  width: 360px;
+  padding: 35px;
 
-.login-page::before {
-  width: 400px;
-  height: 400px;
-  background: #ffffff;
-  top: -80px;
-  right: -100px;
-}
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
 
-.login-page::after {
-  width: 500px;
-  height: 500px;
-  background: #0ea5e9;
-  bottom: -120px;
-  left: -120px;
-}
-
-/* LOGIN CARD (GLASS EFFECT) */
-.login-card {
-  width: 380px;
-  padding: 40px;
-
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(20px);
-
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-
+  border-radius: 15px;
   text-align: center;
-  z-index: 10;
+
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  color: white;
 }
 
 /* TITLE */
-.login-card h2 {
-  font-size: 28px;
-  font-weight: 800;
-  color: #ffffff;
+.login-box h2 {
   margin-bottom: 5px;
+  font-size: 24px;
 }
 
 /* SUBTITLE */
-.subtitle {
+.login-subtitle {
   font-size: 13px;
-  color: #e0f2fe;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
+  opacity: 0.8;
 }
 
 /* INPUTS */
-.login-card input {
+.login-box input {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   margin: 10px 0;
 
+  border-radius: 8px;
   border: none;
-  border-radius: 10px;
-
   outline: none;
 
-  background: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+  background: rgba(255,255,255,0.9);
 }
 
 /* BUTTON */
-.login-card button {
+.login-box button {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
+  margin-top: 10px;
 
-  margin-top: 15px;
+  border: none;
+  border-radius: 8px;
 
   background: #0f172a;
   color: white;
-
-  border: none;
-  border-radius: 10px;
-
   font-weight: bold;
-  font-size: 15px;
 
   cursor: pointer;
-
-  transition: 0.3s ease;
+  transition: 0.3s;
 }
 
-.login-card button:hover {
+.login-box button:hover {
   background: #1e293b;
-  transform: translateY(-2px);
 }
 
 /* FOOTER */
-.footer-text {
+.login-footer {
   margin-top: 15px;
   font-size: 12px;
-  color: #e0f2fe;
-}
-
-/* CENTER FIX */
-.login-card {
-  position: relative;
-  z-index: 10;
+  opacity: 0.8;
 }

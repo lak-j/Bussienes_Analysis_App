@@ -9,54 +9,69 @@ export default function LoginPage({ setIsAuthenticated }) {
 
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    console.log("LOGIN CLICKED");
+  const handleLogin = async (e) => {
+  e.preventDefault(); // ✅ VERY IMPORTANT
 
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, password })
-      });
+  console.log("LOGIN CLICKED");
 
-      const data = await res.json();
-      console.log(data);
+  try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    });
 
-      if (data.success) {
-        localStorage.setItem("token", data.token);
-        setIsAuthenticated(true);
-        navigate("/"); // ✅ redirect
-      } else {
-        setError("Invalid credentials");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Server error");
+    const data = await res.json();
+    console.log(data);
+
+    if (data.success) {
+      localStorage.setItem("token", data.token);
+        localStorage.setItem("username", username); 
+      setIsAuthenticated(true);
+      navigate("/"); // ✅ redirect works now
+    } else {
+      setError("Invalid credentials");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setError("Server error");
+  }
+};
 
-  return (
-    <div className="login-container">
-      <h2>🔐 Login</h2>
+ return (
+  <div className="login-wrapper">
+    <div className="login-box">
 
-      <input
-        placeholder="Username"
-        onChange={(e) => setUsername(e.target.value)}
-      />
+      <h2>📊 Forecast Dashboard</h2>
+      <p className="login-subtitle">Welcome back! Please login</p>
 
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
-      <button type="button" onClick={handleLogin}>
-        Login
-      </button>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        <button type="submit">Login</button>
+        
+        {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+      </form>
+
+      <p className="login-footer">
+        Secure • Fast • Real-time Analytics
+      </p>
+
     </div>
-  );
+  </div>
+);
 }

@@ -243,3 +243,79 @@ body {
   color: #0f172a;
   font-family: Arial, sans-serif;
 }
+/* .logout-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+
+  padding: 8px 14px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+
+  cursor: pointer;
+  font-weight: 600;
+
+  z-index: 1000;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+} */
+/* .logout-btn {
+  position: fixed;
+  top: 15px;
+  right: 15px;   /* ✅ change from left → right */
+
+  /* padding: 8px 14px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  z-index: 9999;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+.logout-btn {
+  backdrop-filter: blur(10px);
+  background: rgba(239, 68, 68, 0.9);
+} */ */
+.user-info {
+  position: fixed !important;   /* 🔥 force override */
+  top: 15px;
+  right: 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 8px;
+
+  font-weight: 600;
+  color: #0f172a;
+
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  z-index: 9999;
+}
+
+.logout-btn {
+  padding: 6px 10px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}

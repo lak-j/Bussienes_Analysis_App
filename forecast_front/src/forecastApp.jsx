@@ -175,10 +175,10 @@ const addTrends = (data) => {
 const paginatedDataWithTrends = addTrends(paginatedData);
 
 // logout
-const logout = () => {
-  localStorage.removeItem("token");
-  window.location.href = "/login";
-};
+// const logout = () => {
+//   localStorage.removeItem("token");
+//   window.location.href = "/login";
+// };
 
  return (
   <div className="app">
@@ -196,7 +196,7 @@ const logout = () => {
       {/* ACTION BUTTONS */}
       {forecastData.length > 0 && (
         <div className="button-group">
-          <button onClick={logout}>Logout</button>
+          {/* <button onClick={logout}>Logout</button> */}
 
           <button onClick={() => window.open("http://localhost:8080/download", "_blank")}>
             Download Excel

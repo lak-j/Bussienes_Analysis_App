@@ -15,10 +15,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/login"
-          element={<LoginPage setIsAuthenticated={setIsAuthenticated} />}
-        />
+       <Route
+  path="/login"
+  element={<LoginPage setIsAuthenticated={setIsAuthenticated} />}
+/>
 
         <Route
           path="/"

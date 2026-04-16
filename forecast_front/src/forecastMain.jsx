@@ -1,17 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ForecastApp from "./forecastApp";
-import TopProductsPage from "./components/TopProductsPage"; // ✅ correct path
-import "./index.css";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <Router>
+import "./App.css";
+import ForecastApp from "./forecastApp";
+import TopProductsPage from "./components/TopProductsPage";
+import LoginPage from "./components/LoginPage";
+
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
+
+  return (
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<ForecastApp />} />
-        <Route path="/top-products" element={<TopProductsPage />} />
+        <Route
+          path="/login"
+          element={<LoginPage setIsAuthenticated={setIsAuthenticated} />}
+        />
+
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <ForecastApp /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/top-products"
+          element={
+            isAuthenticated ? <TopProductsPage /> : <Navigate to="/login" />
+          }
+        />
       </Routes>
-    </Router>
-  </React.StrictMode>
-);
+    </BrowserRouter>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);

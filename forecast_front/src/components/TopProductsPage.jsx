@@ -78,11 +78,15 @@ export default function TopProductsPage() {
   };
 
   return (
-    <div className="top-page">
-      <h2>🏆 Top Products Dashboard</h2>
+  <div className="top-page">
 
-      {/* CONTROLS */}
+    {/* HEADER */}
+    <h2 className="top-title">🏆 Top Products Dashboard</h2>
+
+    {/* CONTROLS */}
+    <div className="controls-center">
       <div className="controls">
+
         <input
           placeholder="Search..."
           value={searchTerm}
@@ -103,17 +107,23 @@ export default function TopProductsPage() {
 
         <button onClick={exportCSV}>CSV</button>
         <button onClick={exportPDF}>PDF</button>
-      </div>
 
-      {/* INSIGHT */}
-      {sorted.length > 0 && (
+      </div>
+    </div>
+
+    {/* INSIGHT */}
+    {sorted.length > 0 && (
+      <div className="insight-center">
         <div className="insight">
           📊 {sorted[0].Product} is leading with {sorted[0].BestValue.toFixed(2)}
         </div>
-      )}
+      </div>
+    )}
 
-      {/* CARDS */}
+    {/* CARDS */}
+    <div className="cards-wrapper">
       <div className="card-container">
+
         {sorted.map((item, index) => {
           const prev = sorted[index - 1];
           let trend = "⏺";
@@ -143,8 +153,10 @@ export default function TopProductsPage() {
                 }}
               />
 
-              <p>{item.Product}</p>
-              <p>{item.BestValue.toFixed(2)} {trend}</p>
+              <p className="product-name">{item.Product}</p>
+              <p className="value">
+                {item.BestValue.toFixed(2)} {trend}
+              </p>
 
               <div className="bar">
                 <div
@@ -157,10 +169,13 @@ export default function TopProductsPage() {
             </div>
           );
         })}
-      </div>
 
-      {/* COMPARE */}
-      {selectedProducts.length > 1 && (
+      </div>
+    </div>
+
+    {/* COMPARE */}
+    {selectedProducts.length > 1 && (
+      <div className="compare-center">
         <div className="compare">
           <h3>📊 Comparison</h3>
           {selectedProducts.map((p, i) => (
@@ -169,19 +184,21 @@ export default function TopProductsPage() {
             </div>
           ))}
         </div>
-      )}
+      </div>
+    )}
 
-      {/* MODAL */}
-      {selectedItem && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>{selectedItem.Product}</h2>
-            <p>Value: {selectedItem.BestValue}</p>
-            <p>Model: {selectedItem.BestModel}</p>
-            <button onClick={() => setSelectedItem(null)}>Close</button>
-          </div>
+    {/* MODAL */}
+    {selectedItem && (
+      <div className="modal">
+        <div className="modal-content">
+          <h2>{selectedItem.Product}</h2>
+          <p>Value: {selectedItem.BestValue}</p>
+          <p>Model: {selectedItem.BestModel}</p>
+          <button onClick={() => setSelectedItem(null)}>Close</button>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+
+  </div>
+);
 }

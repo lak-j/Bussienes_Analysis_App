@@ -174,250 +174,180 @@ const addTrends = (data) => {
 // Apply trend to displayed paginated data
 const paginatedDataWithTrends = addTrends(paginatedData);
 
+// logout
+const logout = () => {
+  localStorage.removeItem("token");
+  window.location.href = "/login";
+};
 
  return (
   <div className="app">
 
-    {/* HEADER */}
-    <div className="header">
-      <h1>📊 Business Forecasting </h1>
-    </div>
+    <div className="page-container">
 
-    {/* UPLOAD */}
-    <UploadForm setForecastData={setForecastData} />
+      {/* HEADER */}
+      <div className="header">
+        <h1>📊 Business Forecasting</h1>
+      </div>
 
-    {/* ACTION BUTTONS */}
-    {forecastData.length > 0 && (
-      <div style={{ marginBottom: "15px" }}>
-       
-        <button onClick={() => window.open("http://localhost:8080/download", "_blank")}>
-          Download Excel
+      {/* UPLOAD */}
+      <UploadForm setForecastData={setForecastData} />
+
+      {/* ACTION BUTTONS */}
+      {forecastData.length > 0 && (
+        <div className="button-group">
+          <button onClick={logout}>Logout</button>
+
+          <button onClick={() => window.open("http://localhost:8080/download", "_blank")}>
+            Download Excel
+          </button>
+
+          <button onClick={exportPDF}>
+            Export PDF
+          </button>
+
+          <button onClick={() => setShowSummary(!showSummary)}>
+            {showSummary ? "Hide Summary" : "Show Summary"}
+          </button>
+        </div>
+      )}
+
+      {/* TOP PRODUCTS BUTTON */}
+      <div className="button-group">
+        <button onClick={() => navigate("/top-products")}>
+          Top Products
         </button>
 
-        <button onClick={exportPDF} style={{ marginLeft: "10px" }}>
-          Export PDF
+        {forecastData.length > 0 && (
+          <button onClick={downloadTableCSV}>
+            Download Table CSV
+          </button>
+        )}
+      </div>
+
+      {/* FILTER */}
+      {forecastData.length > 0 && (
+        <div className="center-row">
+          <label>Filter Product:</label>
+
+          <select
+            value={selectedProduct}
+            onChange={(e) => setSelectedProduct(e.target.value)}
+          >
+            <option value="All">All</option>
+            {Array.from(new Set(forecastData.map(d => d.Product))).map(p => (
+              <option key={p}>{p}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* DATE FILTER */}
+      {forecastData.length > 0 && (
+        <div className="center-row">
+          <label>From:</label>
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+
+          <label>To:</label>
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </div>
+      )}
+
+      {/* SUMMARY */}
+      {showSummary && (
+        <div className="card-container">
+          <div className="card blue"><h4>Total Products</h4><p>{totalProducts}</p></div>
+          <div className="card green"><h4>Months Forecasted</h4><p>{totalMonths}</p></div>
+          <div className="card yellow"><h4>Average Forecast</h4><p>{averageForecast}</p></div>
+          <div className="card red"><h4>Max Forecast</h4><p>{maxForecast}</p></div>
+        </div>
+      )}
+
+      {/* ALERTS */}
+      {topProduct && (
+        <div className="top-product">
+          🏆 Top Product: <strong>{topProduct.Product}</strong> ({topProduct.BestValue})
+        </div>
+      )}
+
+      {highValue && (
+        <div className="alert-box">
+          ⚠️ High Forecast Detected: {highValue.Product} ({highValue.BestValue})
+        </div>
+      )}
+
+      {forecastData.length > 0 && (
+        <div className="live-indicator">
+          🟢 Live Dashboard (Auto-updating every 5s)
+        </div>
+      )}
+
+      {/* CHARTS */}
+      {paginatedData.length > 0 &&
+        Array.from(new Set(paginatedData.map(d => d.Product))).map(product => (
+          <div key={product} className="chart-container">
+            <ForecastChart
+              product={product}
+              data={paginatedData.filter(d => d.Product === product)}
+            />
+          </div>
+        ))
+      }
+
+      {/* PAGINATION */}
+      <div className="pagination">
+        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+          Previous
         </button>
 
+        <span>Page {currentPage} of {totalPages}</span>
 
-
-        <button
-          onClick={() => setShowSummary(!showSummary)}
-          style={{ marginLeft: "30px" }}
-        >
-          {showSummary ? "Hide Summary" : "Show Summary"}
+        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+          Next
         </button>
       </div>
-    )}
 
-
-<div style={{ marginBottom: "15px" }}>
-  
-
-  <button onClick={() => navigate("/top-products")}>
-  Top Products
-</button>
-</div>
-{
-/* {topProducts.length > 0 && showTopProducts && (
-  <div className="top-products-container" style={{ marginTop: "10px" }}>
-    <h3>🏆 Top Products</h3>
-    <ul>
-      {topProducts.map((item, index) => (
-        <li key={index}>
-          {item.Product}: {item.BestValue.toFixed(2)}
-        </li>
-      ))}
-    </ul>
-  </div>
-)} */ }
-
-
-
-{forecastData.length > 0 && (
-  <button
-    onClick={downloadTableCSV}
-    style={{ marginLeft: "10px" }}
-  >
-    Download Table CSV
-  </button>
-)}
-    {/* FILTER */}
-    {forecastData.length > 0 && (
-      <div style={{ marginBottom: "15px" }}>
-        <label style={{ marginRight: "10px", fontWeight: "bold" }}>
-          Filter Product:
-        </label>
-        <select
-          value={selectedProduct}
-          onChange={(e) => setSelectedProduct(e.target.value)}
-        >
-          <option value="All">All</option>
-          {Array.from(new Set(forecastData.map(d => d.Product))).map(p => (
-            <option key={p} value={p}>{p}</option>
-          ))}
-        </select>
+      {/* SORT */}
+      <div className="button-group">
+        <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
+          Sort by Best Value ({sortOrder})
+        </button>
       </div>
-    )}
 
-{/* DATE RANGE FILTER */}
-{forecastData.length > 0 && (
-  <div style={{ marginBottom: "15px" }}>
-    <label style={{ marginRight: "10px", fontWeight: "bold" }}>
-      From:
-    </label>
-    <input
-      type="date"
-      value={startDate}
-      onChange={(e) => setStartDate(e.target.value)}
-    />
+      {/* TABLE */}
+      {forecastData.length > 0 && (
+        <div className="table-container">
+          <h3>Forecast Data Table</h3>
 
-    <label style={{ margin: "0 10px", fontWeight: "bold" }}>
-      To:
-    </label>
-    <input
-      type="date"
-      value={endDate}
-      onChange={(e) => setEndDate(e.target.value)}
-    />
-  </div>
-)}
-    {/* SUMMARY CARDS */}
-    {showSummary && (
-      <div className="card-container">
-        <div className="card blue">
-          <h4>Total Products</h4>
-          <p>{totalProducts}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Date</th>
+                <th>Moving Avg</th>
+                <th>Linear</th>
+                <th>Exp Smoothing</th>
+                <th>Best Model</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {paginatedDataWithTrends.map((row, index) => (
+                <tr key={index}>
+                  <td>{row.Product}</td>
+                  <td>{row.date}</td>
+                  <td>{row.MovingAvg}</td>
+                  <td>{row.Linear}</td>
+                  <td>{row.ExpSmoothing}</td>
+                  <td>{row.BestModel} {row.trend}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      )}
 
-        <div className="card green">
-          <h4>Months Forecasted</h4>
-          <p>{totalMonths}</p>
-        </div>
-
-        <div className="card yellow">
-          <h4>Average Forecast</h4>
-          <p>{averageForecast}</p>
-        </div>
-
-        <div className="card red">
-          <h4>Max Forecast</h4>
-          <p>{maxForecast}</p>
-        </div>
-      </div>
-    )}
-  {/* top products */}
-{topProduct && (
-  <div className="top-product">
-    🏆 Top Product: <strong>{topProduct.Product}</strong>  
-    ({topProduct.BestValue})
-  </div>
-)}
-{highValue && (
-  <div className="alert-box">
-    ⚠️ High Forecast Detected: {highValue.Product} ({highValue.BestValue})
-  </div>
-)}
-
-{forecastData.length > 0 && (
-  <div className="live-indicator">
-    🟢 Live Dashboard (Auto-updating every 5s)
-  </div>
-)}
-
-   {/* PAGINATED CHARTS */}
-{paginatedData.length > 0 &&
-  Array.from(new Set(paginatedData.map(d => d.Product))).map(product => (
-    <div key={product} className="chart-container">
-      <ForecastChart
-        product={product}
-        data={paginatedData.filter(d => d.Product === product)}
-      />
     </div>
-  ))
-}
-<div className="pagination" style={{ marginTop: "20px", textAlign: "center" }}>
-  <button
-    disabled={currentPage === 1}
-    onClick={() => setCurrentPage(currentPage - 1)}
-    style={{ marginRight: "10px" }}
-  >
-    Previous
-  </button>
-
-  <span>Page {currentPage} of {totalPages}</span>
-
-  <button
-    disabled={currentPage === totalPages}
-    onClick={() => setCurrentPage(currentPage + 1)}
-    style={{ marginLeft: "10px" }}
-  >
-    Next
-  </button>
-</div>
-    <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
-  Sort by Best Value ({sortOrder})
-</button>
-
-{forecastData.length > 0 && (
-  <div className="table-container">
-    <h3>Forecast Data Table</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Date</th>
-          <th>Moving Avg</th>
-          <th>Linear</th>
-          <th>Exp Smoothing</th>
-          <th>Best Model</th>
-        </tr>
-      </thead>
-      <tbody>
-        {forecastData.sort((a, b) =>
-    sortOrder === "asc"
-      ? a.BestValue - b.BestValue
-      : b.BestValue - a.BestValue
-  ).map((row, index) => (
-          <tr key={index}>
-            <td>{row.Product}</td>
-            <td>{row.date}</td>
-            <td>{row.MovingAvg}</td>
-            <td>{row.Linear}</td>
-            <td>{row.ExpSmoothing}</td>
-            <td style={{ fontWeight: "bold", color: "green" }}>
-  {row.BestModel}
-</td>
-          </tr>
-        ))}
-      </tbody>
-
-      <tbody>
-  {paginatedDataWithTrends
-    .sort((a, b) =>
-      sortOrder === "asc" ? a.BestValue - b.BestValue : b.BestValue - a.BestValue
-    )
-    .map((row, index) => (
-      <tr key={index}>
-        <td>{row.Product}</td>
-        <td>{row.date}</td>
-        <td>{row.MovingAvg}</td>
-        <td>{row.Linear}</td>
-        <td>{row.ExpSmoothing}</td>
-        <td style={{ fontWeight: "bold", color: "green" }}>
-          {row.BestModel} {row.trend}
-        </td>
-        
-      </tr>
-  ))}
-</tbody>
-
-    </table>
   </div>
-)}
-  
- 
-    
-    </div>
-    
-  );
+);
 }

@@ -11,6 +11,29 @@ import io
 app = Flask(__name__)
 CORS(app)  # Allow all origins (React frontend can connect)
 
+# //user login
+USER = {
+    "username": "lake",
+    "password": "1234"
+}
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.json
+
+    if data["username"] == USER["username"] and data["password"] == USER["password"]:
+        return jsonify({
+            "success": True,
+            "token": "fake-jwt-token"
+        })
+    else:
+        return jsonify({
+            "success": False,
+            "message": "Invalid credentials"
+        }), 401
+
+
+
 @app.after_request
 def after_request(response):
     response.headers.add("Access-Control-Allow-Origin", "*")

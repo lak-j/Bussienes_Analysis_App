@@ -80,22 +80,27 @@ const downloadCSV = () => {
 
 
 
-  return (
-    <div className="mb-4">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-        <input type="file" accept=".xlsx" onChange={handleFileChange} />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          disabled={loading}
-        >
-          {loading ? "Forecasting..." : "Upload & Forecast"}
-        </button>
-     
-    
-      </form>
-   
-      {error && <p className="text-red-500 mt-2">{error}</p>}
-    </div>
-  );
+ return (
+  <div className="mb-4 center-upload">
+    <form onSubmit={handleSubmit} className="upload-form">
+      
+      <input
+        type="file"
+        accept=".xlsx"
+        onChange={handleFileChange}
+      />
+
+      <button
+        type="submit"
+        className="upload-btn"
+        disabled={loading}
+      >
+        {loading ? "Forecasting..." : "Upload & Forecast"}
+      </button>
+
+    </form>
+
+    {error && <p className="error-text">{error}</p>}
+  </div>
+);
 }

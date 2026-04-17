@@ -17,8 +17,7 @@ export default function Navbar() {
 
       {/* LEFT */}
       <div className="nav-left">
-        <h2 onClick={() => navigate("/")}>📊 Business Forecasting</h2>
-
+        <h2 onClick={() => navigate("/")}>📊 Forecast</h2>
         <button onClick={() => navigate("/")}>Dashboard</button>
         <button onClick={() => navigate("/top-products")}>
           Top Products
@@ -27,19 +26,26 @@ export default function Navbar() {
 
       {/* RIGHT */}
       <div className="nav-right">
-        <div className="profile" onClick={() => setOpen(!open)}>
-          👤 {username} ▼
+        <div
+          className="profile-trigger"
+          onClick={() => setOpen(!open)}
+        >
+          👤 Welcome, {username} ▼
         </div>
 
         {open && (
           <div className="dropdown">
-            <button onClick={() => alert("Profile page coming soon")}>
-              Profile
+            <button onClick={() => navigate("/profile")}>
+              👤 Profile
             </button>
-            <button onClick={logout}>Logout</button>
+
+            <button onClick={logout}>
+              🚪 Logout
+            </button>
           </div>
         )}
       </div>
+
     </div>
   );
 }

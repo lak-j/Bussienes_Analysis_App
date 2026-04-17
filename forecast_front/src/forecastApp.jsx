@@ -247,7 +247,7 @@ const paginatedDataWithTrends = addTrends(paginatedData);
       )}
 
       {/* DATE FILTER */}
-      {forecastData.length > 0 && (
+      {/* {forecastData.length > 0 && (
         <div className="center-row">
           <label>From:</label>
           <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
@@ -255,7 +255,7 @@ const paginatedDataWithTrends = addTrends(paginatedData);
           <label>To:</label>
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
-      )}
+      )} */}
 
       {/* SUMMARY */}
       {showSummary && (

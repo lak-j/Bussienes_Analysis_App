@@ -69,9 +69,9 @@ select {
 }
 
 .card.blue { background: #3b82f6; }
-.card.green { background: #10b981; }
-.card.yellow { background: #f59e0b; }
-.card.red { background: #ef4444; }
+.card.green { background: #aaeed7; }
+.card.yellow { background: #b9a074; }
+.card.red { background: #717074; }
 
 /* ALERT */
 .alert-box {
@@ -400,8 +400,8 @@ body {
 /* DROPDOWN */
 .dropdown {
   position: absolute;
-  top: 40px;
-  right: 0;
+  top: 50px;
+  right: 20px;
 
   background: white;
   color: black;
@@ -411,7 +411,8 @@ body {
 
   display: flex;
   flex-direction: column;
-  min-width: 140px;
+  min-width: 150px;
+  z-index: 9999;
 }
 
 .dropdown button {
@@ -424,4 +425,29 @@ body {
 
 .dropdown button:hover {
   background: #5991c9;
+}
+.profile-page {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.profile-card {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+
+  background: rgb(175, 177, 190);
+  border-radius: 12px;
+
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.profile-card p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.profile-note {
+  margin-top: 15px;
+  color: #64748b;
 }

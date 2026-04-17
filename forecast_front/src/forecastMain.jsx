@@ -6,6 +6,7 @@ import "./App.css";
 import ForecastApp from "./forecastApp";
 import TopProductsPage from "./components/TopProductsPage";
 import LoginPage from "./components/LoginPage";
+import ProfilePage from "./components/ProfilePage";
 
 function App() {
  const [isAuthenticated, setIsAuthenticated] = useState(
@@ -18,13 +19,19 @@ function App() {
   path="/login"
   element={<LoginPage setIsAuthenticated={setIsAuthenticated} />}
 />
-
+<Route
+  path="/profile"
+  element={
+    isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />
+  }
+/>
         <Route
           path="/"
           element={
             isAuthenticated ? <ForecastApp /> : <Navigate to="/login" />
           }
         />
+
 
        <Route
   path="/top-products"

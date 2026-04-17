@@ -26,12 +26,14 @@ export default function LoginPage({ setIsAuthenticated }) {
     const data = await res.json();
     console.log(data);
 
-    if (data.success) {
-      localStorage.setItem("token", data.token);
-        localStorage.setItem("username", username); 
-      setIsAuthenticated(true);
-      navigate("/"); // ✅ redirect works now
-    } else {
+   if (data.success) {
+  sessionStorage.setItem("token", data.token);
+  sessionStorage.setItem("username", data.username);
+  sessionStorage.setItem("role", data.role); // ⭐ important
+
+  setIsAuthenticated(true);
+  navigate("/");
+} else {
       setError("Invalid credentials");
     }
   } catch (err) {
@@ -45,7 +47,7 @@ export default function LoginPage({ setIsAuthenticated }) {
     <div className="login-box">
 
       <h2>📊 Forecast Dashboard</h2>
-      <p className="login-subtitle">Welcome back! Please login</p>
+      <p className="login-subtitle">Welcome ! Please login</p>
 
       <form onSubmit={handleLogin}>
         <input

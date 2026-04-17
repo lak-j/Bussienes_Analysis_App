@@ -8,10 +8,9 @@ import TopProductsPage from "./components/TopProductsPage";
 import LoginPage from "./components/LoginPage";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("token")
-  );
-
+ const [isAuthenticated, setIsAuthenticated] = useState(
+  !!sessionStorage.getItem("token")   // ✅ change here
+);
   return (
     <BrowserRouter>
       <Routes>
@@ -27,12 +26,14 @@ function App() {
           }
         />
 
-        <Route
-          path="/top-products"
-          element={
-            isAuthenticated ? <TopProductsPage /> : <Navigate to="/login" />
-          }
-        />
+       <Route
+  path="/top-products"
+  element={
+    isAuthenticated && sessionStorage.getItem("role") === "admin"
+      ? <TopProductsPage />
+      : <Navigate to="/" />
+  }
+/>
       </Routes>
     </BrowserRouter>
   );

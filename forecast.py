@@ -12,26 +12,30 @@ app = Flask(__name__)
 CORS(app)  # Allow all origins (React frontend can connect)
 
 # //user login
-USER = {
-    "username": "lake",
-    "password": "1234"
+users = {
+    "admin": {"password": "1234", "role": "admin"},
+    "user": {"password": "1234", "role": "user"}
 }
+
 
 @app.route("/login", methods=["POST"])
 def login():
-    data = request.json
+    data = request.get_json()
 
-    if data["username"] == USER["username"] and data["password"] == USER["password"]:
+    username = data.get("username")
+    password = data.get("password")
+
+    user = users.get(username)
+
+    if user and user["password"] == password:
         return jsonify({
             "success": True,
-            "token": "fake-jwt-token"
+            "token": "dummy-token",
+            "username": username,
+            "role": user["role"]
         })
     else:
-        return jsonify({
-            "success": False,
-            "message": "Invalid credentials"
-        }), 401
-
+        return jsonify({"success": False}), 401
 
 
 @app.after_request

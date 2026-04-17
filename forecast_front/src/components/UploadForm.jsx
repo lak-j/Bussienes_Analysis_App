@@ -77,13 +77,17 @@ const downloadCSV = () => {
   document.body.appendChild(link);
   link.click();
 };
+sessionStorage.setItem("loginTime", Date.now());
+const loginTime = sessionStorage.getItem("loginTime");
+if (Date.now() - loginTime > 3600000) {
+  sessionStorage.clear();
+}
 
 const logout = () => {
-  localStorage.removeItem("token");
+  sessionStorage.clear();   // ✅ clear session only
   window.location.href = "/login";
 };
-
-const username = localStorage.getItem("username");
+const username = sessionStorage.getItem("username");
 
 
  return (

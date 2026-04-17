@@ -94,12 +94,13 @@ const username = sessionStorage.getItem("username");
   <div className="mb-4 center-upload">
 
   {/* TOP RIGHT USER INFO */}
-  <div className="user-info">
+  {/* <div className="user-info">
     <span>👤 Welcome, {username}</span>
+    
     <button className="logout-btn" onClick={logout}>
-      Logout
+      (Logout)
     </button>
-  </div>
+  </div> */}
 
   <form onSubmit={handleSubmit} className="upload-form">
     <input type="file" accept=".xlsx" onChange={handleFileChange} />

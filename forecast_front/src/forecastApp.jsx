@@ -6,6 +6,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
 
 export default function ForecastApp() {
   
@@ -182,13 +183,16 @@ const paginatedDataWithTrends = addTrends(paginatedData);
 
  return (
   <div className="app">
+ <Navbar /> 
+
+    <div style={{ marginTop: "70px" }}></div>
 
     <div className="page-container">
 
       {/* HEADER */}
-      <div className="header">
+      {/* <div className="header">
         <h1>📊 Business Forecasting</h1>
-      </div>
+      </div> */}
 
       {/* UPLOAD */}
       <UploadForm setForecastData={setForecastData} />
@@ -214,9 +218,9 @@ const paginatedDataWithTrends = addTrends(paginatedData);
 
       {/* TOP PRODUCTS BUTTON */}
       <div className="button-group">
-        <button onClick={() => navigate("/top-products")}>
+        {/* <button onClick={() => navigate("/top-products")}>
           Top Products
-        </button>
+        </button> */}
 
         {forecastData.length > 0 && (
           <button onClick={downloadTableCSV}>

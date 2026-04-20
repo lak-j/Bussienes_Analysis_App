@@ -13,7 +13,7 @@ CORS(app)  # Allow all origins (React frontend can connect)
 
 # //user login
 users = {
-    "admin": {"password": "1234", "role": "admin"},
+    "admin": {"password": "123", "role": "admin"},
     "user": {"password": "1234", "role": "user"}
 }
 
@@ -244,6 +244,34 @@ def top_products():
 
     return jsonify(result)
 
+    # update profile
+@app.route("/update-profile", methods=["POST"])
+def update_profile():
+    data = request.get_json()
+
+    username = data.get("username")
+    new_username = data.get("newUsername")
+    old_password = data.get("oldPassword")
+    new_password = data.get("newPassword")
+
+    user = users.get(username)
+
+    if not user:
+        return jsonify({"success": False, "message": "User not found"})
+
+    # check old password
+    if user["password"] != old_password:
+        return jsonify({"success": False, "message": "Wrong password"})
+
+    # update username
+    if new_username != username:
+        users[new_username] = users.pop(username)
+
+    # update password
+    if new_password:
+        users[new_username]["password"] = new_password
+
+    return jsonify({"success": True})
 
 
 

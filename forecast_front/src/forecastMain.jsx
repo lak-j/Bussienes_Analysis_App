@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import "./index.css";
 import "./App.css";
 import ForecastApp from "./forecastApp";
 import TopProductsPage from "./components/TopProductsPage";

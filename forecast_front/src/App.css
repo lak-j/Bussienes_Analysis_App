@@ -519,3 +519,155 @@ body {
   margin-top: 10px;
   font-weight: 600;
 }
+/* TOGGLE */
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+/* BUTTON */
+.profile-card button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.profile-card button:hover {
+  background: #0284c7;
+}
+
+/* DANGER BUTTON */
+.profile-card .danger {
+  background: #ef4444;
+}
+
+.profile-card .danger:hover {
+  background: #dc2626;
+}
+
+/* STATS */
+.stats {
+  margin-top: 20px;
+  padding: 10px;
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+.profile-page {
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  width: 400px;
+  padding: 25px;
+
+  background: white;
+  border-radius: 16px;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* HEADER */
+.profile-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+
+  margin: auto;
+
+  background: #0ea5e9;
+  color: white;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.role {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* SECTIONS */
+.section {
+  margin-bottom: 15px;
+}
+
+.section h3 {
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+/* INPUT */
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0 10px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+/* PASSWORD */
+.toggle-pass {
+  margin-top: 5px;
+  background: transparent;
+  border: none;
+  color: #0ea5e9;
+  cursor: pointer;
+}
+
+/* STRENGTH */
+.strength {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+/* BUTTON */
+.save-btn {
+  width: 100%;
+  padding: 12px;
+
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  opacity: 0.9;
+}
+
+/* ALERTS */
+.success {
+  margin-top: 10px;
+  color: green;
+  font-weight: bold;
+}
+
+.error {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
+}

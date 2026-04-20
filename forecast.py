@@ -13,7 +13,7 @@ CORS(app)  # Allow all origins (React frontend can connect)
 
 # //user login
 users = {
-    "admin": {"password": "123", "role": "admin"},
+    "admin": {"password": "1234", "role": "admin"},
     "user": {"password": "1234", "role": "user"}
 }
 

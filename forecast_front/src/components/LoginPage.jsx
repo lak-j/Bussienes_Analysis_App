@@ -11,6 +11,11 @@ export default function LoginPage({ setIsAuthenticated }) {
 
   const navigate = useNavigate();
 
+const handleKeyDown = (e) => {
+  if (e.key === "Enter") {
+    handleLogin();
+  }
+};
   // ✅ YOUR API LOGIN (RESTORED)
   const handleLogin = async () => {
     setLoading(true);
@@ -44,7 +49,23 @@ export default function LoginPage({ setIsAuthenticated }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">
+     {loading && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+    
+    <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-3">
+      
+      {/* Spinner */}
+      <div className="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
 
+      {/* Text */}
+      <p className="text-gray-700 font-semibold">
+        Logging you in...
+      </p>
+
+    </div>
+
+  </div>
+)}
       {/* LOGIN CARD */}
       <div className="w-[360px] bg-white rounded-2xl shadow-2xl p-8">
 
@@ -60,13 +81,14 @@ export default function LoginPage({ setIsAuthenticated }) {
           <div className="flex items-center border-b border-gray-300 py-2">
             <span className="text-gray-400 mr-2">👤</span>
 
-            <input
-              type="text"
-              placeholder="Type your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full outline-none text-sm"
-            />
+           <input
+  type="text"
+  placeholder="Type your username"
+  value={username}
+  onChange={(e) => setUsername(e.target.value)}
+  onKeyDown={handleKeyDown}
+  className="w-full outline-none text-sm"
+/>
           </div>
         </div>
 
@@ -77,13 +99,14 @@ export default function LoginPage({ setIsAuthenticated }) {
   <div className="flex items-center border-b border-gray-300 py-2">
     <span className="text-gray-400 mr-2">🔒</span>
 
-    <input
-      type={showPassword ? "text" : "password"}
-      placeholder="Type your password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="w-full outline-none text-sm"
-    />
+   <input
+  type={showPassword ? "text" : "password"}
+  placeholder="Type your password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  onKeyDown={handleKeyDown}
+  className="w-full outline-none text-sm"
+/>
 
     <span
       onClick={() => setShowPassword(!showPassword)}
@@ -108,12 +131,17 @@ export default function LoginPage({ setIsAuthenticated }) {
 
         {/* LOGIN BUTTON */}
         <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full mt-6 py-2 rounded-full text-white font-medium bg-gradient-to-r from-blue-400 to-pink-500 hover:opacity-90 transition"
-        >
-          {loading ? "Logging in..." : "LOGIN"}
-        </button>
+  onClick={handleLogin}
+  disabled={loading}
+  className={`w-full mt-6 py-2 rounded-full text-white font-medium transition
+    ${loading
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-gradient-to-r from-blue-400 to-pink-500 hover:opacity-90"
+    }
+  `}
+>
+  {loading ? "Please wait..." : "LOGIN"}
+</button>
 
         {/* FOOTER */}
         <p className="text-center text-xs text-gray-400 mt-6">

@@ -1,43 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./login.css";
 
 export default function LoginPage({ setIsAuthenticated }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [attempts, setAttempts] = useState(0);
-  const [capsLock, setCapsLock] = useState(false);
 
   const navigate = useNavigate();
 
-  // Load remembered user
-  useEffect(() => {
-    const savedUser = localStorage.getItem("username");
-    if (savedUser) setUsername(savedUser);
-  }, []);
-
-  const validate = () => {
-    if (!username.trim()) return "Username is required";
-    if (!password.trim()) return "Password is required";
-    if (password.length < 4) return "Password too short";
-    return null;
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
+  // ✅ YOUR API LOGIN (RESTORED)
+  const handleLogin = async () => {
     setLoading(true);
     setError("");
 
@@ -55,110 +30,94 @@ export default function LoginPage({ setIsAuthenticated }) {
         sessionStorage.setItem("username", data.username);
         sessionStorage.setItem("role", data.role);
 
-        if (rememberMe) {
-          localStorage.setItem("username", data.username);
-        }
-
         setIsAuthenticated(true);
         navigate("/");
       } else {
-        setAttempts((prev) => prev + 1);
         setError(data.message || "Invalid credentials");
-
-        if (attempts >= 4) {
-          setError("Too many failed attempts. Try again later.");
-        }
       }
-    } catch (err) {
+    } catch {
       setError("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const getPasswordStrength = () => {
-    if (password.length === 0) return "";
-    if (password.length < 4) return "Weak";
-    if (password.length < 8) return "Medium";
-    return "Strong";
-  };
-
   return (
-    <div className="login-wrapper">
-      <div className="login-box">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">
 
-        <h2>📊 Forecast Dashboard</h2>
-        <p className="login-subtitle">Secure Login Portal</p>
+      {/* LOGIN CARD */}
+      <div className="w-[360px] bg-white rounded-2xl shadow-2xl p-8">
 
-        <form onSubmit={handleLogin}>
+        {/* TITLE */}
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Login
+        </h2>
 
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              setError("");
-            }}
-          />
+        {/* USERNAME */}
+        <div className="mb-4">
+          <label className="text-xs text-gray-500">Username</label>
 
-          <div className="password-box">
+          <div className="flex items-center border-b border-gray-300 py-2">
+            <span className="text-gray-400 mr-2">👤</span>
+
             <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onKeyUp={(e) => setCapsLock(e.getModifierState("CapsLock"))}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError("");
-              }}
+              type="text"
+              placeholder="Type your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full outline-none text-sm"
             />
-
-            <span
-              className="toggle-password"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
           </div>
+        </div>
 
-          {capsLock && (
-            <p className="warning-text">⚠ Caps Lock is ON</p>
-          )}
+       {/* PASSWORD */}
+<div className="mb-2">
+  <label className="text-xs text-gray-500">Password</label>
 
-          <p className="strength">
-            Password strength: {getPasswordStrength()}
+  <div className="flex items-center border-b border-gray-300 py-2">
+    <span className="text-gray-400 mr-2">🔒</span>
+
+    <input
+      type={showPassword ? "text" : "password"}
+      placeholder="Type your password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      className="w-full outline-none text-sm"
+    />
+
+    <span
+      onClick={() => setShowPassword(!showPassword)}
+      className="text-gray-500 cursor-pointer select-none ml-2"
+    >
+      {showPassword ? "🙈" : "👁️"}
+    </span>
+  </div>
+</div>
+
+        {/* ERROR */}
+        {error && (
+          <p className="text-red-500 text-xs text-center mt-2">
+            {error}
           </p>
+        )}
 
-          <label className="remember">
-            
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              
-            />
-            Remember me
-          </label>
+        {/* FORGOT PASSWORD */}
+        <div className="text-right text-xs text-gray-500 mt-2 cursor-pointer hover:text-gray-700">
+          Forgot password?
+        </div>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </button>
+        {/* LOGIN BUTTON */}
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="w-full mt-6 py-2 rounded-full text-white font-medium bg-gradient-to-r from-blue-400 to-pink-500 hover:opacity-90 transition"
+        >
+          {loading ? "Logging in..." : "LOGIN"}
+        </button>
 
-          {error && <p className="error-text">{error}</p>}
-
-          <p className="forgot" onClick={() => alert("Reset link sent!")}>
-            Forgot password?
-          </p>
-
-          <p className="attempts">
-            Failed attempts: {attempts}
-          </p>
-
-        </form>
-
-        <p className="login-footer">
-          Secure • Audited • Enterprise Ready
+        {/* FOOTER */}
+        <p className="text-center text-xs text-gray-400 mt-6">
+          Secure • Fast • Reliable
         </p>
 
       </div>
